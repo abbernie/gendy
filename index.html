@@ -13,10 +13,15 @@
         }
 
         h1{
+            position:relative;
+            padding-left:21%;
+            padding-top:10px;
+            padding-bottom:5px;
+            background-color:#efefef;
             font-size:15pt;
             font-family:Helvtica;
             display:block;
-            margin: auto;
+            margin: -10px -10px auto;
         }
     
 
@@ -36,7 +41,18 @@
 
         #banner{
             display:block;
-            margin: auto;
+            margin: 10px auto;
+
+        }
+
+        footer{
+            position: absolute;
+            display: block;
+            background-color:#efefef;
+            bottom:0px;
+            margin:-10px -10px auto;
+            padding-left:45%;
+            padding-right:50%;
         }
 
     </style>
@@ -60,8 +76,10 @@
             <canvas nx="dial" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
         </div>
-
-        <canvas nx="banner" id="banner"></canvas>
+       
+        <footer>
+            <canvas nx="banner" id="banner"></canvas>
+        </footer>
     
     </body>
     <script>
