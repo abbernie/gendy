@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="nexusUI/dist/nexusUI.js"></script>
+        <script src="gendy.js"></script>
+    </head>
+    <style type="text/css">
+        #canvas{
+            width:600px;
+            height:300px;
+            margin: 60px auto;
+            display:block;
+            border: 1px solid black;
+        }
+        h1{
+            font-size:15pt;
+            font-family:Helvetica;
+            display:block;
+            margin: auto;
+        }
+    
+        .widg{
+            width:50px;
+            height:50px;
+            display:inline;
+        }
+        #control{
+            position:relative;
+            left:26%;
+            display:block;
+            margin: 30px;
+            padding:10px 20px;
+        }
+        #banner{
+            display:block;
+            margin: auto;
+        }
+    </style>
+    <body>
+        <h1>
+            <p>GENDY.JS</p>
+            <p>A dynamic stochastic synthesis algorithm</p>
+        </h1>
+
+
+        <canvas id="canvas"></canvas>
+       
+        
+       
+        <div id="control">
+            <canvas nx="button" id="playbutton" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+        </div>
+
+        <canvas nx="banner" id="banner"></canvas>
+    
+    </body>
+    <script>
+        
+        nx.onload = function(){
+            nx.sendsTo("js");
+            nx.showLabels = "true";
+            nx.setLabels("true");
+            nx.colorize("#000000");
+            playbutton.mode = "impulse";
+            var playToggle = 0;
+            playbutton.on('*',function(){
+                
+                playToggle = (playToggle + 1)%2;
+                console.log(playToggle);
+                if(playToggle == 1){
+                    pressed();
+                } else if(playToggle == 0){
+                    stop();
+                }
+            });
+            dial1.label = "x-step size";
+            dial1.on("*", function(){
+                dStep = dial1.val.value * 50;
+                console.log(dStep);
+            });
+            dial2.on("*", function(){
+                dRoom = dial2.val.value * 100;
+                console.log(dRoom);
+            });
+            dial3.on("*", function(){
+                maxA = dial3.val.value;
+                console.log(maxA);
+            });
+            dial4.on("*", function(){
+                minA = dial4.val.value-1;
+                console.log(minA);
+            });
+            dial5.on("*", function(){
+                aStep = dial5.val.value;
+                console.log(aStep);
+            });
+              dial6.on("*", function(){
+                freq = dial6.val.value*2;
+                console.log(freq);
+            });
+        }
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = 300
+        var actx = new (AudioContext || wedkitAudioContext)();
+       
+        var gendy = new Gendy(actx);
+        gendy.connect(actx.destination);
+
+    </script>
+</html>
