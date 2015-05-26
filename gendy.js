@@ -1,0 +1,158 @@
+function Gendy(actx){
+
+
+	this.actx = actx;
+	this.breakpoints = 5;
+
+	this.scriptNode = actx.createScriptProcessor(512,1,1);
+	this.breakpoint = [];
+	
+	this.xStep = 10;
+    this.xRoom = 1;
+    
+    this.yMax = 0.5;
+    this.yMin = -0.5;
+    this.yStep = 0.01;
+    
+    this.freq = .5;
+    
+
+    this.init();
+}
+
+Gendy.prototype.init = function(){
+
+	this.lastX = 0;
+    this.last = 0;
+            
+	    for(var i = 0;i < this.breakpoints;i++){
+	        if(i == 0){
+	            //generate breakpoints
+	            this.breakpoint[0] = {
+	                x : 0.0,
+	                y : 0.0
+	                };
+	        } else if(i != 0){
+	            
+	            this.breakpoint[i] = {};
+	            this.breakpoint[i].x = (Math.random()*200)+this.lastX;
+	            
+	            if(this.breakpoint[i].x >= this.scriptNode.bufferSize){
+	                this.breakpoint[i].x = this.scriptNode.bufferSize-10;
+	            }
+	            this.lastX = this.breakpoint[i].x;
+	            this.breakpoint[i].y = (Math.random()*2)-1;
+	            if(i == this.breakpoints-1){
+	                this.breakpoint[i].y = 0;
+	            }
+	            
+	            this.last = i;
+	        } else if(i == this.breakpoints-1){
+	            this.breakpoint[i].y = 0;
+	        }
+	    }
+	    
+	    this.process();
+
+}
+        
+Gendy.prototype.walk = function(){
+          
+    var last = 0;
+    var next = 1;
+   
+    for(var i = 0; i < this.breakpoint.length;i++){
+        if(i != 0){
+            var randomx = Math.floor(Math.random()*2);
+            var x = this.breakpoint[i].x;
+            
+            if(i != this.breakpoint.length-1){
+                this.breakpoint[i].xMax = this.breakpoint[next].x-this.xRoom;
+            } else {
+                this.breakpoint[i].xMax = this.scriptNode.bufferSize-this.xRoom;
+            }
+            
+            this.breakpoint[i].xMin = this.breakpoint[this.last].x+this.xRoom;
+            // the random walk, 2 samples in either direction
+            if(randomx == 0){
+                x = x - this.xStep;
+            } else if(randomx == 1){
+                x = x + this.xStep;
+            }
+           //bounds on the random walk, if it goes out of bounds, it jumps the difference back in
+            if(x >= this.breakpoint[i].xMax-this.xRoom){
+               x = this.breakpoint[i].xMax-this.xRoom;
+            } else if(x <= this.breakpoint[i].xMin+this.xRoom){
+               x = this.breakpoint[i].xMin+this.xRoom;
+            }
+            this.breakpoint[i].x = x;
+            
+            var randomy = Math.floor(Math.random()*2);
+            var y = this.breakpoint[i].y;
+            if(randomy == 0){
+                y = y - this.yStep;
+            } else if(randomy == 1){
+                y = y + this.yStep;
+            }
+            if(y > this.yMax){
+                y = this.yMax-(this.y-this.yMax);
+            } else if(y < this.yMin){
+                y = this.yMin-(this.y-this.yMin);
+            }
+            this.breakpoint[i].y = y;
+        } 
+        if(i == this.breakpoint.length-1){
+            this.breakpoint[i].y = 0;
+            
+        }
+        last = i;
+        next++;
+    }
+    console.log("hey");
+}
+
+Gendy.prototype.process = function(){
+    var point = 0;
+    var index = 0;
+    var y = 0;
+    var breakpoint = this.breakpoint;
+    var freq = this.freq;
+
+   	var walk = this.walk();
+    
+    this.scriptNode.onaudioprocess = function(audioProcessingEvent){
+    	
+        var outputBuffer = audioProcessingEvent.outputBuffer;
+        var outputData = outputBuffer.getChannelData(0);
+        
+        for(var j = 0; j < outputData.length;j++){
+            // linearly interpolate between the new breakpoint positions
+            // get the interp point by comparing index to the x distance
+            var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x);
+            
+            y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
+            if(point < breakpoint.length && index >= breakpoint[point+1].x) {
+                point++;
+            }
+            
+            outputData[j] = y;
+            index+=freq; 
+            if(index >= breakpoint[breakpoint.length-1].x){
+                index = 0;
+                point = 0;
+                this.walk(); 
+            }  
+        }
+    }
+
+}
+       
+
+Gendy.prototype.connect = function(output){
+    this.scriptNode.connect(output);
+}
+
+Gendy.prototype.disconnect = function(output){
+	this.scriptNode.disconnect(this.output);
+}
+
