@@ -1,377 +1,302 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="nexusUI/dist/nexusUI.js"></script>
-    </head>
-    <style type="text/css">
-        #canvas{
-            width:600px;
-            height:300px;
-            margin: 60px auto;
-            display:block;
-            border: 1px solid black;
-        }
+  <head>
+      <script src="nexusUI/dist/nexusUI.js"></script>
+  </head>
+  <style type="text/css">
+      
+      
+      #canvas{
+          width:600px;
+          height:300px;
+          margin: 30px auto;
+          display:block;
+          border: 1px solid black;
+          padding:10px;
 
-        h1{
-            font-size:15pt;
-            font-family:Helvtica;
-            display:block;
-            margin: auto;
-        }
-    
+      }
 
-        .widg{
-            width:50px;
-            height:50px;
-            display:inline;
-        }
-
-        #control{
-            position:relative;
-            left:26%;
-            display:block;
-            margin: 30px;
-            padding:10px 20px;
-        }
-
-        #banner{
-            display:block;
-            margin: auto;
-        }
-
-    </style>
-    <body>
-        <h1>
-            <p>GENDY.JS</p>
-            <p>A dynamic stochastic synthesis algorithm</p>
-        </h1>
-
-
-        <canvas id="canvas"></canvas>
-       
-        
-       
-        <div id="control">
-            <canvas nx="button" id="playbutton" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-        </div>
-
-        <canvas nx="banner" id="banner"></canvas>
-    
-    </body>
-    <script>
-        var dStep = 10;
-        var dRoom = 10;
-        
-        var maxA = 0.5;
-        var minA = -0.5;
-        var aStep = 0.01;
-        
-        var freq = 1;
-
-        nx.onload = function(){
-
-            nx.sendsTo("js");
-            nx.showLabels = "true";
-            nx.setLabels("true");
-            nx.colorize("#000000");
-
-            playbutton.mode = "impulse";
-            var playToggle = 0;
-            playbutton.on('*',function(){
-                
-                playToggle = (playToggle + 1)%2;
-                console.log(playToggle);
-                if(playToggle == 1){
-                    pressed();
-                } else if(playToggle == 0){
-                    stop();
-                }
-            });
-
-            dial1.label = "x-step size";
-            dial1.on("*", function(){
-                dStep = dial1.val.value * 20;
-                console.log(dStep);
-            });
-
-            dial2.on("*", function(){
-                dRoom = dial2.val.value * 100;
-                console.log(dRoom);
-            });
-
-            dial3.on("*", function(){
-                maxA = dial3.val.value;
-                console.log(maxA);
-            });
-
-            dial4.on("*", function(){
-                minA = dial4.val.value-1;
-                console.log(minA);
-            });
-
-            dial5.on("*", function(){
-                aStep = dial5.val.value / 10;
-                console.log(aStep);
-            });
-
-              dial6.on("*", function(){
-                freq = dial6.val.value;
-                console.log(freq);
-            });
-        }
-
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext('2d');
-
-        canvas.width = 600;
-        canvas.height = 300
-
-        var actx = new (AudioContext || wedkitAudioContext)();
-        var channels = 1;
-        var scriptNode = actx.createScriptProcessor(512,1,1);
-        var sine = actx.createOscillator();
-        var gain = actx.createGain;
-        sine.type = 'sine';
-        sine.frequency.value = 200;
-        console.log(scriptNode.bufferSize);
-
-        var breakpoint = [];
-
-        function init(num){
-
-            var lastX = 0;
-            var last = 0;
-            
-            for(var i = 0;i < num;i++){
-                if(i == 0){
-
-                    //generate breakpoints
-                    breakpoint[0] = {
-                        x : 0.0,
-                        y : 0.0,
-                        x1 : 0.0,
-                        y1 : 0.0,
-                        m : 0.0,
-                        b : 0.0
-                        };
-                   // console.log("point",i, breakpoint[i]);
-
-                } else if(i != 0){
-
-                    
-                    breakpoint[i] = {};
-
-                    breakpoint[i].x = (Math.random()*200)+lastX;
-                    
-                    if(breakpoint[i].x >= scriptNode.bufferSize){
-                        breakpoint[i].x = scriptNode.bufferSize-10;
-                    }
-                    lastX = breakpoint[i].x;
-
-                    breakpoint[i].y = (Math.random()*2)-1;
-
-                    if(i == num-1){
-                        breakpoint[i].y = 0;
-                    }
-
-                    breakpoint[i].x1 = breakpoint[last].x;
-                    breakpoint[i].y1 = breakpoint[last].y;
-
-                    breakpoint[i].m = (breakpoint[i].y-breakpoint[last].y1)/(breakpoint[i].x-breakpoint[last].x1); 
-                   
-                    breakpoint[i].b = breakpoint[i].y-(breakpoint[i].m*breakpoint[i].x); 
-
-                    last = i;
-                } else if(i == num-1){
-                    breakpoint[i].y = 0;
-                }
-
-            }
-           
-            console.log(breakpoint); 
-        }
-
-        function walk(){
+      h1{
+        background-color: #faf0fa;
+        padding:20px;
+        margin:-10px;
+      }
+      h1 p{
+          position:relative;
+          left:22%;
+          color:#0000a0;
+          font-size:15pt;
+          font-family:Helvetica;
+          display:block;
+          margin: 10px auto;
           
-            var last = 0;
-            var next = 1;
-           
-            for(var i = 0; i < breakpoint.length;i++){
-                if(i != 0){
+      }
+  
+      .widg{
+          width:50px;
+          height:50px;
+          position:relative;
+          display:inline;
+          left:25%;
+      }
 
-                    var randomx = Math.floor(Math.random()*2);
-                    var x = breakpoint[i].x;
-                    
-                    if(i != breakpoint.length-1){
-                        breakpoint[i].maxD = breakpoint[next].x-dRoom;
-                    } else {
-                        breakpoint[i].maxD = scriptNode.bufferSize-dRoom;
-                    }
-                    
-                    breakpoint[i].minD = breakpoint[last].x+dRoom;
+      #control{
+          width:560px;
+          margin: auto;
+          display:block;
+          margin-top: -30px;
+          padding:10px 20px;
+          background-color: #faf0fa;
+      }
+     
+  </style>
+  <body>
+      <h1>
+          <p>GendyJS</p>
+          <p>A Web Audio Dynamic Stochastic Synthesis Algorithm</p>
+      </h1>
 
-                    // the random walk, 2 samples in either direction
-                    if(randomx == 0){
-                        x = x - dStep;
-                    } else if(randomx == 1){
-                        x = x + dStep;
-                    }
 
-                   //bounds on the random walk, if it goes out of bounds, it jumps the difference back in
-                    if(x >= breakpoint[i].maxD-dRoom){
-                        //x = breakpoint[i].maxD-(x-breakpoint[i].maxD);
-                       x = breakpoint[i].maxD-dRoom;
-                    } else if(x <= breakpoint[i].minD+dRoom){
-                        //x = breakpoint[i].minD-(x-breakpoint[i].minD);
-                       x = breakpoint[i].minD+dRoom;
-                    }
+      <canvas id="canvas"></canvas>
+     
+      
+     
+      <div id="control">
+          <canvas nx="button" id="playbutton" class="widg"></canvas>
+          <canvas nx="dial" class="widg"></canvas>
+          
+          <canvas nx="dial" class="widg"></canvas>
+          
+          <canvas nx="dial" class="widg"></canvas>
+          <canvas nx="dial" class="widg"></canvas>
+      </div>
 
-                //    console.log(randomx, "x ", x);
+  </body>
+  <script>
+      
+    nx.onload = function(){
+        nx.sendsTo("js");
+        nx.showLabels = "true";
+        nx.setLabels("true");
+        nx.colorize("#0000a0");
+        playbutton.mode = "impulse";
+        
+        var playToggle = 0;
+        
+        playbutton.on('*',function(){
+            
+            playToggle = (playToggle + 1)%2;
+            console.log(playToggle);
+            if(playToggle == 1){
+                pressed();
+            } else if(playToggle == 0){
+                stop();
+            }
+        });
+        
+        dial1.label = "x-step size";
+        dial1.on("*", function(){
+            xStep = dial1.val.value * 50;
+            console.log(xStep);
+        }); 
+        
+        dial2.on("*", function(){
+            yMax = dial2.val.value;
+            yMin = dial2.val.value*(-1);
+            console.log(yMax);
+        });
 
-                    breakpoint[i].x = x;
+        dial3.on("*", function(){
+            yStep = dial3.val.value;
+            console.log(yStep);
+        });
+        
+        dial4.on("*", function(){
+            freq = dial4.val.value*10;
+            console.log(freq);
+        });
+    }
 
-                    var randomy = Math.floor(Math.random()*2);
-                    var y = breakpoint[i].y;
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext('2d');
+    
+    canvas.width = 600;
+    canvas.height = 300
+    
+    /*
+    *
+    *
+    * AUDIO SYNTHESIS CODE
+    *
+    *
+    */
 
-                    if(randomy == 0){
-                        y = y - aStep;
-                    } else if(randomy == 1){
-                        y = y + aStep;
-                    }
+    var actx = new (AudioContext || wedkitAudioContext)();
 
-                    if(y > maxA){
-                        y = maxA-(y-maxA);
-                        //y = maxA
-                    } else if(y < minA){
-                        y = minA-(y-minA);
-                        //y = minA
-                    }
+    var scriptNode = actx.createScriptProcessor(512,1,1);
 
-                    //   console.log(randomy,"y ", y);
-                    breakpoint[i].y = y;
+    var breakpoint = [];
+    
+    var xStep = 1;
+    var xRoom = 10;
 
-                } 
+    var yMax = 0.5;
+    var yMin = -0.5;
+    var yStep = 0.01;
 
-                if(i == breakpoint.length-1){
-                    breakpoint[i].y = 0;
-                    
+    var y = 0;
+    var point = 0;
+    var index = 0;
+    var freq = 1;
+    
+    function init(breakpoints){
+        var lastX = 0;
+        var last = 0;
+        
+        for(var i = 0;i < breakpoints;i++){
+            if(i == 0){
+                //generate breakpoints
+                breakpoint[0] = {
+                    x : 0.0,
+                    y : 0.0,
+                    x1 : 0.0,
+                    y1 : 0.0,
+                    m : 0.0,
+                    b : 0.0
+                    };
+            } else if(i != 0){
+                
+                breakpoint[i] = {};
+                breakpoint[i].x = (Math.random()*200)+lastX;
+                
+                if(breakpoint[i].x >= scriptNode.bufferSize){
+                    breakpoint[i].x = scriptNode.bufferSize-10;
                 }
-
-                //compute the slope and y intercept for these new walking breakpoints
-
+                lastX = breakpoint[i].x;
+                breakpoint[i].y = (Math.random()*2)-1;
+                if(i == breakpoints-1){
+                    breakpoint[i].y = 0;
+                }
                 breakpoint[i].x1 = breakpoint[last].x;
                 breakpoint[i].y1 = breakpoint[last].y;
-
                 breakpoint[i].m = (breakpoint[i].y-breakpoint[last].y1)/(breakpoint[i].x-breakpoint[last].x1); 
-
+               
                 breakpoint[i].b = breakpoint[i].y-(breakpoint[i].m*breakpoint[i].x); 
-
                 last = i;
-                next++;
+            } else if(i == breakpoints-1){
+                breakpoint[i].y = 0;
             }
-            //console.log(" test");
-
         }
+    }
+    
 
-        var index = 0;
-
-        scriptNode.onaudioprocess = function(audioProcessingEvent){
-            
-            var lastPoint = 0;
-
-            var outputBuffer = audioProcessingEvent.outputBuffer;
-            var outputData = outputBuffer.getChannelData(0);
-                for(var j = 0; j < outputData.length; j++){
-                    // linearly interpolate between the new breakpoit positions
-                    for(var i = 0; i < breakpoint.length; i++){
-
-                        var y = breakpoint[lastPoint].y; 
-                            
-                        if(y >= breakpoint[i].y){
-                                // y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq; 
-                        }  
-
-                        if(y <= breakpoint[i].y){
-                                //y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq;  
-                        }
-                       
-                        lastPoint = i;
-                          if(index >= breakpoint[breakpoint.length-1].x){
-                            index = 0;
-                            //console.log("DEBUG!");
-                        }  
-
-                    }
-                   
-                } 
-
-            walk(); //use random walk to generate new x/y position for each breakpoint
-        }
-
-        function debug(){
-            
-            console.log(index);
-            console.log(breakpoint[breakpoint.length-1].x);
-
-            
-        }
-
-
-
-
-        function canvasDraw(){
-            window.requestAnimationFrame(canvasDraw);
-
-            context.globalAlpha = 0.2
-            context.fillStyle = "#EEE"
-            context.fillRect(0,0,canvas.width,canvas.height)
-
-            context.globalAlpha = 1
-            //this is cool but saving for later
-            //context.strokeStyle = "rgb("+breakpoint[1].x%255+","+breakpoint[1].y*100+",0)";
-            context.strokeStyle = "black";
-            context.lineWidth = 6;
-
-            context.beginPath();
-            context.moveTo(0,canvas.height/2)
-            for (var i=0;i<breakpoint.length;i++) {
-                context.lineTo((breakpoint[i].x/scriptNode.bufferSize)*canvas.width,breakpoint[i].y*canvas.height+canvas.height/2)
+    function walk(){
+      
+        var last = 0;
+        var next = 1;
+       
+        for(var i = 0; i < breakpoint.length;i++){
+            if(i != 0){
+                var randomx = Math.floor(Math.random()*2);
+                var x = breakpoint[i].x;
+                
+                if(i != breakpoint.length-1){
+                    breakpoint[i].xMax = breakpoint[next].x-xRoom;
+                } else {
+                    breakpoint[i].xMax = scriptNode.bufferSize-xRoom;
+                }
+                
+                breakpoint[i].xMin = breakpoint[last].x+xRoom;
+                // the random walk, 2 samples in either direction
+                if(randomx == 0){
+                    x = x - xStep;
+                } else if(randomx == 1){
+                    x = x + xStep;
+                }
+               //bounds on the random walk, if it goes out of bounds, it jumps the difference back in
+                if(x >= breakpoint[i].xMax-xRoom){
+                   x = breakpoint[i].xMax-xRoom;
+                } else if(x <= breakpoint[i].xMin+xRoom){
+                   x = breakpoint[i].xMin+xRoom;
+                }
+                breakpoint[i].x = x;
+                
+                var randomy = Math.floor(Math.random()*2);
+                var y = breakpoint[i].y;
+                
+                if(randomy == 0){
+                    y = y - yStep;
+                } else if(randomy == 1){
+                    y = y + yStep;
+                }
+                if(y > yMax){
+                    y = yMax-(y-yMax);
+                } else if(y < yMin){
+                    y = yMin-(y-yMin);
+                }
+                breakpoint[i].y = y;
+            } 
+            if(i == breakpoint.length-1){
+                breakpoint[i].y = 0;
+                
             }
-           // context.lineTo(canvas.width,canvas.height/2)
-            context.stroke()
-            context.closePath()
-
+            last = i;
+            next++;
         }
+    }
 
-        function play(){
 
-            sine.connect(actx.destination);
-           // sine.start();
-            scriptNode.connect(actx.destination);
-        }
+    scriptNode.onaudioprocess = function(audioProcessingEvent){
+      context.globalAlpha = 0.5;
+      context.fillStyle = "#fff"
+      context.fillRect(0,0,canvas.width,canvas.height);
+      var outputBuffer = audioProcessingEvent.outputBuffer;
+      var outputData = outputBuffer.getChannelData(0);
+      for(var j = 0; j < outputData.length;j++){
+          // linearly interpolate between the new breakpoint positions
+          // get the interp point by comparing index to the x distance
+          var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x)
+          
+          y = nx.interp(lerp,breakpoint[point].y,breakpoint[point+1].y);
+          if(point < breakpoint.length && index >= breakpoint[point+1].x) {
+              point++;
+          }
+          
+          outputData[j] = y;
+          index+=freq; 
 
-        function stop(){
-            scriptNode.disconnect(actx.destination);
-        }
+          if(index >= breakpoint[breakpoint.length-1].x){
+              index = 0;
+              point = 0;
+              walk(); 
+          }  
+          context.globalAlpha = 1;
+          context.fillStyle = "#0000a0";
+          context.fillRect(index,y*canvas.height+canvas.height/2,5,5);
+      }
 
-        function pressed(){
-            init(7);
-            console.log(breakpoint[breakpoint.length-1].x);
-            play();
-            canvasDraw();
-        }
+    
 
-    </script>
+    }
+   
+
+    function connect(output){
+        scriptNode.connect(output);
+    }
+
+    function disconnect(output){
+        scriptNode.disconnect(output);
+    }
+
+    function pressed(){
+      init(15);
+      connect(actx.destination);
+    }
+
+    function stop(){
+      disconnect(actx.destination);
+    }
+
+      
+  </script>
 </html>
