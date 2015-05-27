@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="nexusUI/dist/nexusUI.js"></script>
+        <script src="js/nexusUI.js"></script>
         <script src="gendy.js"></script>
     </head>
     <style type="text/css">
@@ -48,6 +48,7 @@
         
        
         <div id="control">
+            <canvas nx="toggle"></canvas>
             <canvas nx="button" id="playbutton" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
@@ -67,43 +68,43 @@
             nx.showLabels = "true";
             nx.setLabels("true");
             nx.colorize("#000000");
-            playbutton.mode = "impulse";
-            var playToggle = 0;
-            playbutton.on('*',function(){
-                
-                playToggle = (playToggle + 1)%2;
-                console.log(playToggle);
-                if(playToggle == 1){
+            
+            toggle1.on('*',function(){
+                if(toggle1.val.value == 1){
                     pressed();
-                } else if(playToggle == 0){
+                } else if(toggle1.val.value == 0){
                     stop();
                 }
             });
-            dial1.label = "x-step size";
+        
+            dial1.label = "x step";
+            console.log(nx.showLabels);
+            dial1.set({value:0.1});
             dial1.on("*", function(){
-                dStep = dial1.val.value * 50;
-                console.log(dStep);
-            });
+                gendy.xStep = dial1.val.value * 50;
+
+                console.log(gendy.xStep);
+            }); 
+            
+            dial2.set({value:0.5});
             dial2.on("*", function(){
-                dRoom = dial2.val.value * 100;
-                console.log(dRoom);
+                gendy.yMax = dial2.val.value;
+                gendy.yMin = dial2.val.value*(-1);
+                console.log(gendy.yMax);
             });
+
+            dial3.set({value:0.01});
             dial3.on("*", function(){
-                maxA = dial3.val.value;
-                console.log(maxA);
+                gendy.yStep = dial3.val.value;
+                console.log(gendy.yStep);
             });
+            
+            dial4.set({value:0.1});
             dial4.on("*", function(){
-                minA = dial4.val.value-1;
-                console.log(minA);
+                gendy.freq = dial4.val.value*10;
+                console.log(gendy.freq);
             });
-            dial5.on("*", function(){
-                aStep = dial5.val.value;
-                console.log(aStep);
-            });
-              dial6.on("*", function(){
-                freq = dial6.val.value*2;
-                console.log(freq);
-            });
+
         }
         var canvas = document.getElementById("canvas");
         var context = canvas.getContext('2d');
@@ -112,7 +113,12 @@
         var actx = new (AudioContext || wedkitAudioContext)();
        
         var gendy = new Gendy(actx);
-        gendy.connect(actx.destination);
+
+        function pressed(){
+
+            gendy.connect(actx.destination);
+            gendy.start();
+        }
 
     </script>
 </html>
