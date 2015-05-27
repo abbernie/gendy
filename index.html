@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <script src="js/nexusUI.js"></script>
+      <script src="nexusUI/dist/nexusUI.js"></script>
   </head>
   <style type="text/css">
       
@@ -12,8 +12,7 @@
           margin: 30px auto;
           display:block;
           border: 1px solid black;
-          padding:10px;
-
+          
       }
 
       h1{
@@ -37,17 +36,36 @@
           height:50px;
           position:relative;
           display:inline;
-          left:25%;
+          
+      }
+
+      .contain{
+        position:relative;
+        display:inline;
+        font-family:Helvetica;
+        font-size:10pt;
+        background-color: #ff88ff;
+        width:50px;
+        height:70px;
+        margin:10px;
+      }
+
+      .contain p{
+        position:relative;
+        margin:auto;
+        left:8px;
       }
 
       #control{
           width:560px;
+          height:100px;
           margin: auto;
           display:block;
           margin-top: -30px;
           padding:10px 20px;
           background-color: #faf0fa;
       }
+
      
   </style>
   <body>
@@ -62,13 +80,23 @@
       
      
       <div id="control">
-          <canvas nx="button" id="playbutton" class="widg"></canvas>
-          <canvas nx="dial" class="widg"></canvas>
-          
-          <canvas nx="dial" class="widg"></canvas>
-          
-          <canvas nx="dial" class="widg"></canvas>
-          <canvas nx="dial" class="widg"></canvas>
+          <canvas nx="toggle"></canvas>
+          <div class="contain">
+            <canvas nx="dial" class="widg"></canvas>
+            <p>x step</p>
+          </div>
+          <div class="contain">
+            <canvas nx="dial" class="widg"></canvas>
+            <p>y max</p>
+          </div>
+          <div class="contain">
+            <canvas nx="dial" class="widg"></canvas>
+            <p>y step</p>
+          </div>
+          <div class="contain">
+            <canvas nx="dial" class="widg"></canvas>
+            <p>frequency</p>
+          </div>
       </div>
 
   </body>
@@ -77,40 +105,40 @@
     nx.onload = function(){
         nx.sendsTo("js");
         nx.showLabels = "true";
-        nx.setLabels("true");
+        
         nx.colorize("#0000a0");
-        playbutton.mode = "impulse";
         
-        var playToggle = 0;
-        
-        playbutton.on('*',function(){
-            
-            playToggle = (playToggle + 1)%2;
-            console.log(playToggle);
-            if(playToggle == 1){
-                pressed();
-            } else if(playToggle == 0){
-                stop();
-            }
+        toggle1.on('*',function(){
+          if(toggle1.val.value == 1){
+              pressed();
+          } else if(toggle1.val.value == 0){
+              stop();
+          }
         });
         
-        dial1.label = "x-step size";
+        dial1.label = "x step";
+        console.log(nx.showLabels);
+        dial1.set({value:0.1});
         dial1.on("*", function(){
             xStep = dial1.val.value * 50;
+
             console.log(xStep);
         }); 
         
+        dial2.set({value:0.5});
         dial2.on("*", function(){
             yMax = dial2.val.value;
             yMin = dial2.val.value*(-1);
             console.log(yMax);
         });
 
+        dial3.set({value:0.01});
         dial3.on("*", function(){
             yStep = dial3.val.value;
             console.log(yStep);
         });
         
+        dial4.set({value:0.1});
         dial4.on("*", function(){
             freq = dial4.val.value*10;
             console.log(freq);
@@ -132,6 +160,9 @@
     */
 
     var actx = new (AudioContext || wedkitAudioContext)();
+
+    var gain = actx.createGain();
+    gain.gain.value = 0;
 
     var scriptNode = actx.createScriptProcessor(512,1,1);
 
@@ -257,7 +288,7 @@
           // get the interp point by comparing index to the x distance
           var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x)
           
-          y = nx.interp(lerp,breakpoint[point].y,breakpoint[point+1].y);
+          y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
           if(point < breakpoint.length && index >= breakpoint[point+1].x) {
               point++;
           }
@@ -289,12 +320,17 @@
     }
 
     function pressed(){
-      init(15);
-      connect(actx.destination);
+      gain.gain.setValueAtTime(0.0,actx.currentTime);
+      connect(gain);
+      gain.connect(actx.destination);
+      init(5);
+      gain.gain.linearRampToValueAtTime(1.0, actx.currentTime+5.0);
+      
+      
     }
 
     function stop(){
-      disconnect(actx.destination);
+      disconnect(gain);
     }
 
       
