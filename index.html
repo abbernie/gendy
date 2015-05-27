@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
+<<<<<<< HEAD
       <script src="nexusUI/dist/nexusUI.js"></script>
+=======
+      <script src="nexusUI.js"></script>
+>>>>>>> gh-pages
   </head>
   <style type="text/css">
       
@@ -12,7 +16,11 @@
           margin: 30px auto;
           display:block;
           border: 1px solid black;
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> gh-pages
       }
 
       h1{
@@ -36,6 +44,7 @@
           height:50px;
           position:relative;
           display:inline;
+<<<<<<< HEAD
           
       }
 
@@ -54,18 +63,27 @@
         position:relative;
         margin:auto;
         left:8px;
+=======
+          left:25%;
+>>>>>>> gh-pages
       }
 
       #control{
           width:560px;
+<<<<<<< HEAD
           height:100px;
+=======
+>>>>>>> gh-pages
           margin: auto;
           display:block;
           margin-top: -30px;
           padding:10px 20px;
           background-color: #faf0fa;
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> gh-pages
      
   </style>
   <body>
@@ -80,6 +98,7 @@
       
      
       <div id="control">
+<<<<<<< HEAD
           <canvas nx="toggle"></canvas>
           <div class="contain">
             <canvas nx="dial" class="widg"></canvas>
@@ -97,6 +116,15 @@
             <canvas nx="dial" class="widg"></canvas>
             <p>frequency</p>
           </div>
+=======
+          <canvas nx="button" id="playbutton" class="widg"></canvas>
+          <canvas nx="dial" class="widg"></canvas>
+          
+          <canvas nx="dial" class="widg"></canvas>
+          
+          <canvas nx="dial" class="widg"></canvas>
+          <canvas nx="dial" class="widg"></canvas>
+>>>>>>> gh-pages
       </div>
 
   </body>
@@ -105,6 +133,7 @@
     nx.onload = function(){
         nx.sendsTo("js");
         nx.showLabels = "true";
+<<<<<<< HEAD
         
         nx.colorize("#0000a0");
         
@@ -126,19 +155,50 @@
         }); 
         
         dial2.set({value:0.5});
+=======
+        nx.setLabels("true");
+        nx.colorize("#0000a0");
+        playbutton.mode = "impulse";
+        
+        var playToggle = 0;
+        
+        playbutton.on('*',function(){
+            
+            playToggle = (playToggle + 1)%2;
+            console.log(playToggle);
+            if(playToggle == 1){
+                pressed();
+            } else if(playToggle == 0){
+                stop();
+            }
+        });
+        
+        dial1.label = "x-step size";
+        dial1.on("*", function(){
+            xStep = dial1.val.value * 50;
+            console.log(xStep);
+        }); 
+        
+>>>>>>> gh-pages
         dial2.on("*", function(){
             yMax = dial2.val.value;
             yMin = dial2.val.value*(-1);
             console.log(yMax);
         });
 
+<<<<<<< HEAD
         dial3.set({value:0.01});
+=======
+>>>>>>> gh-pages
         dial3.on("*", function(){
             yStep = dial3.val.value;
             console.log(yStep);
         });
         
+<<<<<<< HEAD
         dial4.set({value:0.1});
+=======
+>>>>>>> gh-pages
         dial4.on("*", function(){
             freq = dial4.val.value*10;
             console.log(freq);
@@ -161,9 +221,12 @@
 
     var actx = new (AudioContext || wedkitAudioContext)();
 
+<<<<<<< HEAD
     var gain = actx.createGain();
     gain.gain.value = 0;
 
+=======
+>>>>>>> gh-pages
     var scriptNode = actx.createScriptProcessor(512,1,1);
 
     var breakpoint = [];
@@ -288,7 +351,11 @@
           // get the interp point by comparing index to the x distance
           var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x)
           
+<<<<<<< HEAD
           y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
+=======
+          y = nx.interp(lerp,breakpoint[point].y,breakpoint[point+1].y);
+>>>>>>> gh-pages
           if(point < breakpoint.length && index >= breakpoint[point+1].x) {
               point++;
           }
@@ -320,6 +387,7 @@
     }
 
     function pressed(){
+<<<<<<< HEAD
       gain.gain.setValueAtTime(0.0,actx.currentTime);
       connect(gain);
       gain.connect(actx.destination);
@@ -331,6 +399,14 @@
 
     function stop(){
       disconnect(gain);
+=======
+      init(15);
+      connect(actx.destination);
+    }
+
+    function stop(){
+      disconnect(actx.destination);
+>>>>>>> gh-pages
     }
 
       

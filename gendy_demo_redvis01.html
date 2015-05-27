@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-<<<<<<< HEAD
-        <script src="js/nexusUI.js"></script>
-=======
-        <script src="nexusUI/dist/nexusUI.js"></script>
->>>>>>> gh-pages
+        <script src="nexusUI.js"></script>
     </head>
     <style type="text/css">
         #canvas{
@@ -76,7 +72,7 @@
         var minA = -0.5;
         var aStep = 0.01;
         
-        var freq = 1;
+        var freq = 0.001;
 
         nx.onload = function(){
 
@@ -280,48 +276,59 @@
                 next++;
             }
             //console.log(" test");
+            //
+            canvasDraw()
 
         }
 
         var index = 0;
+        //var point = 0;
+        var lerpFreq = 0.01;
+
 
         scriptNode.onaudioprocess = function(audioProcessingEvent){
-            
-            var lastPoint = 0;
-
+            //console.log(index);
             var outputBuffer = audioProcessingEvent.outputBuffer;
             var outputData = outputBuffer.getChannelData(0);
-                for(var j = 0; j < outputData.length; j++){
-                    // linearly interpolate between the new breakpoit positions
-                    for(var i = 0; i < breakpoint.length; i++){
 
-                        var y = breakpoint[lastPoint].y; 
-                            
-                        if(y >= breakpoint[i].y){
-                                // y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq; 
-                        }  
-
-                        if(y <= breakpoint[i].y){
-                                //y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq;  
-                        }
-                       
-                        lastPoint = i;
-                          if(index >= breakpoint[breakpoint.length-1].x){
-                            index = 0;
-                            //console.log("DEBUG!");
-                        }  
-
+            for(var j = 0; j < outputData.length; j++){
+                // linearly interpolate between the new breakpoit positions
+               for(var point = 1; point < breakpoint.length;point++){
+                    var lerpIndex = 0;
+                    while(lerpIndex <= 1){
+                        
+                        var y = nx.interp(lerpIndex, breakpoint[point-1].y, breakpoint[point].y);
+                        outputData[j] = y; 
+                        index+=freq; 
+                        lerpIndex+=0.01;
+                     //   console.log("y ",y);
+                   }
+                    if(lerpIndex >= 1){
+                        lerpIndex = 0;
                     }
-                   
-                } 
 
-            walk(); //use random walk to generate new x/y position for each breakpoint
+                     if(index >= breakpoint[breakpoint.length-1].x){
+                  //  console.log("hey!");
+                        index = 0;
+                    //point = 0;
+                    //use random walk to generate new x/y position for each breakpoint
+                         walk(); 
+                }  
+                }
+               
+                /*
+                if(point <= breakpoint.length) {
+                    point++;
+                    console.log("point", point);
+                }
+                */
+                console.log(index, breakpoint[breakpoint.length-1].x)
+               
+               
+            } 
+
+            context.fillStyle = "#f00";
+            context.fillRect(index,y*canvas.height+canvas.height/2,5,5);
         }
 
         function debug(){
@@ -336,9 +343,9 @@
 
 
         function canvasDraw(){
-            window.requestAnimationFrame(canvasDraw);
+         //   window.requestAnimationFrame(canvasDraw);
 
-            context.globalAlpha = 0.2
+            context.globalAlpha = 1
             context.fillStyle = "#EEE"
             context.fillRect(0,0,canvas.width,canvas.height)
 
@@ -351,7 +358,7 @@
             context.beginPath();
             context.moveTo(0,canvas.height/2)
             for (var i=0;i<breakpoint.length;i++) {
-                context.lineTo((breakpoint[i].x/scriptNode.bufferSize)*canvas.width,breakpoint[i].y*canvas.height+canvas.height/2)
+                context.lineTo(breakpoint[i].x,breakpoint[i].y*canvas.height+canvas.height/2)
             }
            // context.lineTo(canvas.width,canvas.height/2)
             context.stroke()
@@ -371,7 +378,7 @@
         }
 
         function pressed(){
-            init(7);
+            init(4);
             console.log(breakpoint[breakpoint.length-1].x);
             play();
             canvasDraw();

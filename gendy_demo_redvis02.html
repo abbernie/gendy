@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-<<<<<<< HEAD
-        <script src="js/nexusUI.js"></script>
-=======
-        <script src="nexusUI/dist/nexusUI.js"></script>
->>>>>>> gh-pages
+        <script src="nexusUI.js"></script>
     </head>
     <style type="text/css">
         #canvas{
@@ -54,9 +50,10 @@
         <canvas id="canvas"></canvas>
        
         
-       
+       <canvas nx="button" id="debuggy" class="widg"></canvas>
         <div id="control">
             <canvas nx="button" id="playbutton" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
             <canvas nx="dial" class="widg"></canvas>
@@ -76,7 +73,7 @@
         var minA = -0.5;
         var aStep = 0.01;
         
-        var freq = 1;
+        var freq = 0.001;
 
         nx.onload = function(){
 
@@ -87,6 +84,11 @@
 
             playbutton.mode = "impulse";
             var playToggle = 0;
+            
+            debuggy.on('*',function(){
+                debug();
+            });
+
             playbutton.on('*',function(){
                 
                 playToggle = (playToggle + 1)%2;
@@ -125,8 +127,13 @@
             });
 
               dial6.on("*", function(){
-                freq = dial6.val.value;
+                freq = dial6.val.value*10;
                 console.log(freq);
+            });
+
+              dial7.on("*", function(){
+                lerpFreq = dial7.val.value/100+0.00001;
+                console.log(lerpFreq);
             });
         }
 
@@ -187,7 +194,7 @@
                     breakpoint[i].x1 = breakpoint[last].x;
                     breakpoint[i].y1 = breakpoint[last].y;
 
-                    breakpoint[i].m = (breakpoint[i].y-breakpoint[last].y1)/(breakpoint[i].x-breakpoint[last].x1); 
+                    breakpoint[i].m = (breakpoint[i].y-breakpoint[i].y1)/(breakpoint[i].x-breakpoint[i].x1); 
                    
                     breakpoint[i].b = breakpoint[i].y-(breakpoint[i].m*breakpoint[i].x); 
 
@@ -272,7 +279,7 @@
                 breakpoint[i].x1 = breakpoint[last].x;
                 breakpoint[i].y1 = breakpoint[last].y;
 
-                breakpoint[i].m = (breakpoint[i].y-breakpoint[last].y1)/(breakpoint[i].x-breakpoint[last].x1); 
+                breakpoint[i].m = (breakpoint[i].y-breakpoint[i].y1)/(breakpoint[i].x-breakpoint[i].x1); 
 
                 breakpoint[i].b = breakpoint[i].y-(breakpoint[i].m*breakpoint[i].x); 
 
@@ -280,54 +287,70 @@
                 next++;
             }
             //console.log(" test");
+            //
+            canvasDraw()
 
         }
 
         var index = 0;
+        var point = 0;
+        var lerpFreq = 0.01;
+
 
         scriptNode.onaudioprocess = function(audioProcessingEvent){
-            
-            var lastPoint = 0;
-
+           // console.log(index);
             var outputBuffer = audioProcessingEvent.outputBuffer;
             var outputData = outputBuffer.getChannelData(0);
-                for(var j = 0; j < outputData.length; j++){
-                    // linearly interpolate between the new breakpoit positions
-                    for(var i = 0; i < breakpoint.length; i++){
 
-                        var y = breakpoint[lastPoint].y; 
-                            
-                        if(y >= breakpoint[i].y){
-                                // y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq; 
-                        }  
+            for(var j = 0; j < outputData.length; j++){
+                // linearly interpolate between the new breakpoit positions
+               if(point > 0){
+                  
+                    var y = breakpoint[point-1].y;
+                   // while(y <= breakpoint[point].y){
+                        
+                        var y = (breakpoint[point].m*index)+breakpoint[point].b;
+                        outputData[j] = y; 
+                        index+=freq; 
+                        
+                       // console.log(lerpIndex);
+                  // }
+                  /*  if(lerpIndex >= 1){
+                        lerpIndex = 0;
+                    }*/
+                }
+               
 
-                        if(y <= breakpoint[i].y){
-                                //y = m(x)+b
-                                y = (breakpoint[i].m*index)+breakpoint[i].b;
-                                outputData[j] = y; 
-                                index+=freq;  
-                        }
-                       
-                        lastPoint = i;
-                          if(index >= breakpoint[breakpoint.length-1].x){
-                            index = 0;
-                            //console.log("DEBUG!");
-                        }  
+                if(point <= breakpoint.length) {
+                   // console.log("point", point);
+                    point++;
+                    
+                }  
 
-                    }
-                   
-                } 
+                if(point >=breakpoint.length){
+                    point = 0;
+                }
+                
+                var end = breakpoint.length-1;
+                //console.log(index, breakpoint[end].x);
+                
+                if(index >= breakpoint[end].x){
+                   // console.log("hey!");
+                    index = 0;
+                    //use random walk to generate new x/y position for each breakpoint
+                    walk(); 
+                }  
+               
+            } 
 
-            walk(); //use random walk to generate new x/y position for each breakpoint
+            context.fillStyle = "#f00";
+            context.fillRect(index,y*canvas.height+canvas.height/2,5,5);
         }
 
         function debug(){
             
-            console.log(index);
-            console.log(breakpoint[breakpoint.length-1].x);
+          //  console.log(index);
+            console.log(breakpoint[breakpoint.length-1].y);
 
             
         }
@@ -336,9 +359,9 @@
 
 
         function canvasDraw(){
-            window.requestAnimationFrame(canvasDraw);
+         //   window.requestAnimationFrame(canvasDraw);
 
-            context.globalAlpha = 0.2
+            context.globalAlpha = 1
             context.fillStyle = "#EEE"
             context.fillRect(0,0,canvas.width,canvas.height)
 
@@ -351,7 +374,7 @@
             context.beginPath();
             context.moveTo(0,canvas.height/2)
             for (var i=0;i<breakpoint.length;i++) {
-                context.lineTo((breakpoint[i].x/scriptNode.bufferSize)*canvas.width,breakpoint[i].y*canvas.height+canvas.height/2)
+                context.lineTo(breakpoint[i].x,breakpoint[i].y*canvas.height+canvas.height/2)
             }
            // context.lineTo(canvas.width,canvas.height/2)
             context.stroke()
@@ -361,7 +384,7 @@
 
         function play(){
 
-            sine.connect(actx.destination);
+            //sine.connect(actx.destination);
            // sine.start();
             scriptNode.connect(actx.destination);
         }
@@ -371,11 +394,12 @@
         }
 
         function pressed(){
-            init(7);
+            init(6);
             console.log(breakpoint[breakpoint.length-1].x);
             play();
             canvasDraw();
         }
+    
 
     </script>
 </html>
