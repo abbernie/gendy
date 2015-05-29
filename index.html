@@ -5,22 +5,40 @@
   </head>
   <style type="text/css">
       
+      body{
+        font-style:Helvetica;
+      }
+
+      #background{
+        background-color: #bbccFF;
+        opacity:0.1;
+        position:fixed;
+        margin:-10px;
+        width:100%;
+        height:100%;
+      }
       
       #canvas{
-          width:600px;
-          height:300px;
-          margin: 30px auto;
-          display:block;
-          border: 1px solid black;
+        position:relative;
+        width:600px;
+        height:300px;
+        top:50px;
+        margin: 30px auto;
+        display:block;
+        box-shadow:1px 1px #e0e0e0;
+        background-color: #fff;
           
       }
 
-      h1{
+      #top{
         background-color: #fafafa;
         padding:20px;
         margin:-10px;
+        box-shadow:1px 1px #e0e0e0;
+        z-index:10;
       }
-      h1 p{
+      
+      #top p{
           position:relative;
           left:22%;
           color:#0000a0;
@@ -36,8 +54,12 @@
           height:50px;
           position:relative;
           display:inline;
-          
+          left:100px;
+          z-index:20;
+          margin-left:-50px;
       }
+
+
 
       .contain{
         position:relative;
@@ -45,34 +67,70 @@
         font-family:Helvetica;
         font-size:10pt;
         background-color: #fafafa;
-        width:50px;
-        height:70px;
-        margin:10px;
       }
 
       .contain p{
         position:relative;
-        margin:auto;
-        left:8px;
+        display:inline;
+        top:20px;
+        left:20px;
+        padding-left:10px;
       }
 
       #control{
+        position:relative;
+        top:100px;
           width:560px;
-          height:100px;
+          height:60px;
           margin: auto;
           display:block;
           margin-top: -30px;
-          padding:10px 20px;
-          background-color: #fafafa;
+          padding:40px 20px;
+          box-shadow:0px 1px 1px 0px #e0e0e0;
+          background-color: #fff;  
       }
 
+      #number{
+        width:100px;
+      }
+
+      footer{
+        position:fixed;
+        margin:-8px;
+        bottom:0px;
+        height:40px;
+        width:100%;
+        background-color: #fafafa;
+        padding:30px;
+        font-size:12pt;
+
+      }
+
+      footer p{
+        left:100px;
+      }
+
+      #fork{
+        position:relative;
+        width:50px;
+        height:50px;
+        display:inline;
+        left:80%;
+        top:-60px;
+      }
+
+      a{
+        color:#000;
+      }
      
   </style>
   <body>
-      <h1>
+    <div id="background"></div>
+
+      <div id="top">
           <p>GendyJS</p>
           <p>A Web Audio Dynamic Stochastic Synthesis Algorithm</p>
-      </h1>
+      </div>
 
 
       <canvas id="canvas"></canvas>
@@ -81,22 +139,47 @@
      
       <div id="control">
           <canvas nx="toggle"></canvas>
-         
-            <canvas nx="dial" class="widg"></canvas>
-        
-            <canvas nx="dial" class="widg"></canvas>
-        
-        
-            <canvas nx="dial" class="widg"></canvas>
-           
-          
-            <canvas nx="dial" class="widg"></canvas>
+            
+            <div class="contain">
+                <canvas nx="number" class="widg"></canvas>
+                <p># breakpoints</p>
+            </div>
+            <div class="contain">
+                <canvas nx="dial" class="widg"></canvas>
+                <p>x step size</p>
+            </div>
+            <div class="contain">
+                <canvas nx="dial" class="widg"></canvas>
+                <p>y bounds</p>
+            </div>
+            <div class="contain">
+                <canvas nx="dial" class="widg"></canvas>
+                <p>y step size</p>
+            </div>
+            <div class="contain">
+                <canvas nx="dial" class="widg"></canvas>
+                <p>frequency</p>
+            </div>
+            <div class="contain">
+                <canvas nx="dial" class="widg"></canvas>
+                <p>volume</p>
+            </div>
         </div>
+
+        <footer>
+            <p>GendyJS is a project of <a href="http://www.andrewbernste.in">Andrew Bernstein</a></p>
+            <a href="http://www.github.com/abbernie/gendy"><img src="fork.png" id="fork"></img></a>
+        </footer>
 
   </body>
   <script>
       
+      
+
     nx.onload = function(){
+
+        var num = 5;
+
         nx.sendsTo("js");
         nx.showLabels = "true";
         
@@ -105,11 +188,21 @@
         toggle1.on('*',function(){
           if(toggle1.val.value == 1){
               pressed();
+              init(num);
           } else if(toggle1.val.value == 0){
               stop();
           }
         });
         
+        number1.label = "# of Breakpoints";
+        console.log(nx.showLabels);
+        number1.set({value:5});
+        number1.on("*", function(){
+            num = Math.floor(number1.val.value);
+            init(num);
+            console.log(number1);
+        });
+
         dial1.label = "x step";
         console.log(nx.showLabels);
         dial1.set({value:0.1});
@@ -137,6 +230,12 @@
             freq = dial4.val.value*10;
             console.log(freq);
         });
+
+        dial5.set({value:0.5});
+        dial5.on("*", function(){
+            vol = dial5.val.value;
+            console.log(vol);
+        });
     }
 
     var canvas = document.getElementById("canvas");
@@ -157,6 +256,10 @@
 
     var gain = actx.createGain();
     gain.gain.value = 0;
+
+    var gain2 = actx.createGain();
+    var vol = 0.5;
+    gain2.gain.value = vol;
 
     var scriptNode = actx.createScriptProcessor(512,1,1);
 
@@ -316,15 +419,15 @@
     function pressed(){
       gain.gain.setValueAtTime(0.0,actx.currentTime);
       connect(gain);
-      gain.connect(actx.destination);
-      init(5);
+      gain.connect(gain2);
+      gain2.connect(actx.destination);
       gain.gain.linearRampToValueAtTime(1.0, actx.currentTime+5.0);
       
       
     }
 
     function stop(){
-      disconnect(gain);
+      disconnect(gain2);
     }
 
       
