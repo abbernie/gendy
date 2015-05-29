@@ -46,7 +46,7 @@ Y Step Size
 gendy.yStep = 0.25;
 ```
 
-The ```js init()``` method can be called to reinitialize the waveform with a new number of breakpoints.
+The ```init()``` method can be called to reinitialize the waveform with a new number of breakpoints.
 
 ```js
 gendy.init(10);
