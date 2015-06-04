@@ -83,6 +83,7 @@ var cnames_active = {
     , "fromdenisvieira": "fromdenisvieira.github.io"
     , "frzr": "pakastin.github.io/frzr"
     , "geekr": "ruanyl.github.io/geekr"
+    , "gendy": "abbernie.github.io/gendy"
     , "ghoullier": "ghoullier.github.io"
     , "goodseller": "goodseller.github.io"
     , "graphics2d": "keyten.github.io/Graphics2D"
