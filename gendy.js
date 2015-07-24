@@ -1,6 +1,5 @@
 function Gendy(actx){
 
-<<<<<<< HEAD
     this.actx = actx;
     this.breakpoints = 5;
 
@@ -19,7 +18,6 @@ function Gendy(actx){
     this.point = 0;
     this.y = 0;
     this.freq = 0.5;
-=======
 
 	this.actx = actx;
 	this.breakpoints = 5;
@@ -35,15 +33,12 @@ function Gendy(actx){
     this.yStep = 0.01;
     
     this.freq = .5;
-    
->>>>>>> gh-pages
 
     this.init();
 }
 
 Gendy.prototype.init = function(){
 
-<<<<<<< HEAD
     this.lastX = 0;
     this.last = 0;
             
@@ -73,7 +68,7 @@ Gendy.prototype.init = function(){
             this.breakpoint[i].y = 0;
         }
     }
-=======
+
 	this.lastX = 0;
     this.last = 0;
             
@@ -105,7 +100,6 @@ Gendy.prototype.init = function(){
 	    }
 	    
 	    this.process();
->>>>>>> gh-pages
 
 }
         
@@ -161,15 +155,12 @@ Gendy.prototype.walk = function(){
         last = i;
         next++;
     }
-<<<<<<< HEAD
 }
 
 Gendy.prototype.process = function(){
 
     this.scriptNode.onaudioprocess = function(audioProcessingEvent){
 	   
-=======
-    console.log("hey");
 }
 
 Gendy.prototype.process = function(){
@@ -183,14 +174,13 @@ Gendy.prototype.process = function(){
     
     this.scriptNode.onaudioprocess = function(audioProcessingEvent){
     	
->>>>>>> gh-pages
         var outputBuffer = audioProcessingEvent.outputBuffer;
         var outputData = outputBuffer.getChannelData(0);
         
         for(var j = 0; j < outputData.length;j++){
             // linearly interpolate between the new breakpoint positions
             // get the interp point by comparing index to the x distance
-<<<<<<< HEAD
+
             var lerp = (this.index - this.breakpoint[this.point].x) / (this.breakpoint[this.point+1].x - this.breakpoint[this.point].x);
             
             this.y = lerp * (this.breakpoint[this.point+1].y - this.breakpoint[this.point].y) + this.breakpoint[this.point].y;
@@ -209,7 +199,6 @@ Gendy.prototype.process = function(){
     }.bind(this);
 }
        
-=======
             var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x);
             
             y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
@@ -229,8 +218,6 @@ Gendy.prototype.process = function(){
 
 }
        
-
->>>>>>> gh-pages
 Gendy.prototype.connect = function(output){
     this.scriptNode.connect(output);
 }
@@ -239,10 +226,8 @@ Gendy.prototype.disconnect = function(output){
 	this.scriptNode.disconnect(this.output);
 }
 
-<<<<<<< HEAD
+
 Gendy.prototype.start = function(){
     this.process();
 }
 
-=======
->>>>>>> gh-pages
