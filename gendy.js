@@ -8,7 +8,7 @@ function Gendy(actx){
     this.breakpoint = [];
 
     this.xStep = 10;
-    this.xRoom = 1;
+    this.xRoom = 10;
 
     this.yMax = 0.5;
     this.yMin = -0.5;
@@ -17,22 +17,7 @@ function Gendy(actx){
     this.index = 0;
     this.point = 0;
     this.y = 0;
-    this.freq = 0.5;
-
-	this.actx = actx;
-	this.breakpoints = 5;
-
-	this.scriptNode = actx.createScriptProcessor(512,1,1);
-	this.breakpoint = [];
-	
-	this.xStep = 10;
-    this.xRoom = 1;
-    
-    this.yMax = 0.5;
-    this.yMin = -0.5;
-    this.yStep = 0.01;
-    
-    this.freq = .5;
+    this.freq = 0.01;
 
     this.init();
 }
@@ -48,7 +33,7 @@ Gendy.prototype.init = function(){
             this.breakpoint[0] = {
                 x : 0.0,
                 y : 0.0
-                };
+            };
         } else if(i != 0){
             
             this.breakpoint[i] = {};
@@ -67,39 +52,23 @@ Gendy.prototype.init = function(){
         } else if(i == this.breakpoints-1){
             this.breakpoint[i].y = 0;
         }
-    }
 
-	this.lastX = 0;
-    this.last = 0;
-            
-	    for(var i = 0;i < this.breakpoints;i++){
-	        if(i == 0){
-	            //generate breakpoints
-	            this.breakpoint[0] = {
-	                x : 0.0,
-	                y : 0.0
-	                };
-	        } else if(i != 0){
-	            
-	            this.breakpoint[i] = {};
-	            this.breakpoint[i].x = (Math.random()*200)+this.lastX;
-	            
-	            if(this.breakpoint[i].x >= this.scriptNode.bufferSize){
-	                this.breakpoint[i].x = this.scriptNode.bufferSize-10;
-	            }
-	            this.lastX = this.breakpoint[i].x;
-	            this.breakpoint[i].y = (Math.random()*2)-1;
-	            if(i == this.breakpoints-1){
-	                this.breakpoint[i].y = 0;
-	            }
-	            
-	            this.last = i;
-	        } else if(i == this.breakpoints-1){
-	            this.breakpoint[i].y = 0;
-	        }
-	    }
-	    
-	    this.process();
+    /*    if (i>0 && i<this.breakpoint.length) {
+
+        	with (context) {
+        		lineWidth = 4
+        		strokeStyle = "#fa0"
+        		beginPath()
+        			moveTo(this.breakpoint[i-1].x,this.breakpoint[i-1].y*canvas.height/2 + canvas.height/2)
+        			lineTo(this.breakpoint[i].x,this.breakpoint[i].y*canvas.height/2 + canvas.height/2)
+        			stroke()
+        		closePath()
+        	}		
+
+
+        } */
+
+    }
 
 }
         
@@ -107,7 +76,7 @@ Gendy.prototype.walk = function(){
           
     var last = 0;
     var next = 1;
-   
+  
     for(var i = 0; i < this.breakpoint.length;i++){
         if(i != 0){
             var randomx = Math.floor(Math.random()*2);
@@ -119,7 +88,7 @@ Gendy.prototype.walk = function(){
                 this.breakpoint[i].xMax = this.scriptNode.bufferSize-this.xRoom;
             }
             
-            this.breakpoint[i].xMin = this.breakpoint[this.last].x+this.xRoom;
+            this.breakpoint[i].xMin = this.breakpoint[last].x+this.xRoom;
             // the random walk, 2 samples in either direction
             if(randomx == 0){
                 x = x - this.xStep;
@@ -147,6 +116,9 @@ Gendy.prototype.walk = function(){
                 y = this.yMin-(this.y-this.yMin);
             }
             this.breakpoint[i].y = y;
+
+            
+            
         } 
         if(i == this.breakpoint.length-1){
             this.breakpoint[i].y = 0;
@@ -154,23 +126,28 @@ Gendy.prototype.walk = function(){
         }
         last = i;
         next++;
+
+      /*  if (i>0 && i<this.breakpoint.length) {
+
+        	with (context) {
+        		strokeStyle = "#fa0"
+        		beginPath()
+        			moveTo(this.breakpoint[i-1].x,this.breakpoint[i-1].y*canvas.height/2 + canvas.height/2)
+        			lineTo(this.breakpoint[i].x,this.breakpoint[i].y*canvas.height/2 + canvas.height/2)
+        			stroke()
+        		closePath()
+        	}		
+
+        } */
+
     }
 }
 
-Gendy.prototype.process = function(){
-
-    this.scriptNode.onaudioprocess = function(audioProcessingEvent){
-	   
-}
 
 Gendy.prototype.process = function(){
     var point = 0;
     var index = 0;
     var y = 0;
-    var breakpoint = this.breakpoint;
-    var freq = this.freq;
-
-   	var walk = this.walk();
     
     this.scriptNode.onaudioprocess = function(audioProcessingEvent){
     	
@@ -194,38 +171,25 @@ Gendy.prototype.process = function(){
                 this.index = 0;
                 this.point = 0;
                 this.walk(); 
+            //    context.fillStyle = "#eee"
+    		//	context.fillRect(0,0,canvas.width,canvas.height)
+    
             }  
+
+	    //	context.fillStyle = "#0af"
+	    //	context.fillRect(this.index,this.y * canvas.height/2 + canvas.height/2,5,5)
         }
     }.bind(this);
 }
-       
-            var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x);
-            
-            y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
-            if(point < breakpoint.length && index >= breakpoint[point+1].x) {
-                point++;
-            }
-            
-            outputData[j] = y;
-            index+=freq; 
-            if(index >= breakpoint[breakpoint.length-1].x){
-                index = 0;
-                point = 0;
-                this.walk(); 
-            }  
-        }
-    }
-
-}
+      
        
 Gendy.prototype.connect = function(output){
     this.scriptNode.connect(output);
 }
 
 Gendy.prototype.disconnect = function(output){
-	this.scriptNode.disconnect(this.output);
+	this.scriptNode.disconnect(output);
 }
-
 
 Gendy.prototype.start = function(){
     this.process();
