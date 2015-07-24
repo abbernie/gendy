@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="js/nexusUI.js"></script>
+        <script src="gendy.js"></script>
+    </head>
+    <style type="text/css">
+        #canvas{
+            width:600px;
+            height:300px;
+            margin: 60px auto;
+            display:block;
+            border: 1px solid black;
+        }
+        h1{
+            font-size:15pt;
+            font-family:Helvetica;
+            display:block;
+            margin: auto;
+        }
+    
+        .widg{
+            width:50px;
+            height:50px;
+            display:inline;
+        }
+        #control{
+            position:relative;
+            left:26%;
+            display:block;
+            margin: 30px;
+            padding:10px 20px;
+        }
+        #banner{
+            display:block;
+            margin: auto;
+        }
+    </style>
+    <body>
+        <h1>
+            <p>GENDY.JS</p>
+            <p>A dynamic stochastic synthesis algorithm</p>
+        </h1>
+
+
+        <canvas id="canvas"></canvas>
+       
+        
+       
+        <div id="control">
+            <canvas nx="toggle"></canvas>
+            <canvas nx="button" id="playbutton" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+            <canvas nx="dial" class="widg"></canvas>
+        </div>
+
+        <canvas nx="banner" id="banner"></canvas>
+    
+    </body>
+    <script>
+        
+        nx.onload = function(){
+            nx.sendsTo("js");
+            nx.showLabels = "true";
+            nx.setLabels("true");
+            nx.colorize("#000000");
+            
+            toggle1.on('*',function(){
+                if(toggle1.val.value == 1){
+                    pressed();
+                } else if(toggle1.val.value == 0){
+                    stop();
+                }
+            });
+        
+            dial1.label = "x step";
+            console.log(nx.showLabels);
+            dial1.set({value:0.1});
+            dial1.on("*", function(){
+                gendy.xStep = dial1.val.value * 50;
+
+                console.log(gendy.xStep);
+            }); 
+            
+            dial2.set({value:0.5});
+            dial2.on("*", function(){
+                gendy.yMax = dial2.val.value;
+                gendy.yMin = dial2.val.value*(-1);
+                console.log(gendy.yMax);
+            });
+
+            dial3.set({value:0.01});
+            dial3.on("*", function(){
+                gendy.yStep = dial3.val.value;
+                console.log(gendy.yStep);
+            });
+            
+            dial4.set({value:0.1});
+            dial4.on("*", function(){
+                gendy.freq = dial4.val.value*10;
+                console.log(gendy.freq);
+            });
+
+        }
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = 300
+        var actx = new (AudioContext || wedkitAudioContext)();
+       
+        var gendy = new Gendy(actx);
+
+        function pressed(){
+
+            gendy.connect(actx.destination);
+            gendy.start();
+        }
+
+    </script>
+</html>
