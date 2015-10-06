@@ -3,43 +3,13 @@
     <head>
         <script src="js/nexusUI.js"></script>
         <script src="gendy.js"></script>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <style type="text/css">
-        #canvas{
-            width:600px;
-            height:300px;
-            margin: 60px auto;
-            display:block;
-            border: 1px solid black;
-        }
-        h1{
-            font-size:15pt;
-            font-family:Helvetica;
-            display:block;
-            margin: auto;
-        }
-    
-        .widg{
-            width:50px;
-            height:50px;
-            display:inline;
-        }
-        #control{
-            position:relative;
-            left:26%;
-            display:block;
-            margin: 30px;
-            padding:10px 20px;
-        }
-        #banner{
-            display:block;
-            margin: auto;
-        }
-    </style>
+
     <body>
         <h1>
             <p>GENDY.JS</p>
-            <p>A dynamic stochastic synthesis algorithm</p>
+            <p id="subtitle">A module for dynamic stochastic synthesis</p>
         </h1>
 
 
@@ -47,18 +17,63 @@
        
         
        
-        <div id="control">
-            <canvas nx="toggle"></canvas>
-            <canvas nx="button" id="playbutton" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-            <canvas nx="dial" class="widg"></canvas>
-        </div>
+        <table id="control">
+            <tr>
+                <td>
+                    <canvas nx="toggle"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="number"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider" class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+            </tr>
+            
+            <tr id="labels">
+                <td>
+                    <label for="io" id="iol">i/o</label>
+                </td>
+                <td>
+                    <label for="break" id="breakl">points</label>
+                </td>
+                <td>
+                    <label for="x" id="xl">x-step</label>
+                </td>
+                <td>
+                    <label for="ystep" id="ystepl">y-step</label>
+                </td>
+                <td>
+                    <label for="ybound" id="yboundl">y-bounds</label>
+                </td>
+                <td>
+                    <label for="freq" id="freql">frequency</label>
+                </td>
+            </tr>
 
-        <canvas nx="banner" id="banner"></canvas>
+        </table>
+
+        <div id="clear"></div>
+
+        <div id="info">
+            <div id="text">
+                <h3>More?</h3>
+                <p>Explore the Gendy.js <a href="http://www.github.com/abbernie/gendy">API</a></p>
+                <p>Contribute this project on <a href="http://www.github.com/abbernie/gendy">Github</a></p>
+
+                <p> Peruse the work of the project's authors, <a href="http://www.andrewbernste.in">Andrew Bernstein</a> and <a href="http://www.whitechord.org"> Ben Taylor</a></p>
+            </div>
+
+        </div>
     
     </body>
     <script>
@@ -67,43 +82,60 @@
             nx.sendsTo("js");
             nx.showLabels = "true";
             nx.setLabels("true");
-            nx.colorize("#000000");
+            nx.colorize("#007700");
+
             
             toggle1.on('*',function(){
                 if(toggle1.val.value == 1){
                     
                     gendy.connect(actx.destination);
+                    canvasDraw();
                     gendy.start();
                 } else if(toggle1.val.value == 0){
                     gendy.disconnect(actx.destination);
                 }
             });
+            number1.decimalPlaces = 0;
+            number1.set({value:10});
+            gendy.breakpoints = 15;
+            number1.on("*", function(){
+                gendy.breakpoints = number1.val.value;
+                gendy.init();
+                context.fillStyle = "#ffffff";
+                context.fillRect(0,0,canvas.width,canvas.height);
+                console.log("breakpoints", gendy.breakpoints)
+            })
         
-            dial1.label = "x step";
-        //    dial1.set({value:0.1});
-            dial1.on("*", function(){
-                gendy.xStep = dial1.val.value * 50;
+            slider1.label = "x step";
+            slider1.set({value:2.8});
+            gendy.xStep = 0;
+            slider1.on("*", function(){
+                gendy.xStep = slider1.val.value * 50;
 
-                console.log(gendy.xStep);
+                console.log("xstep", gendy.xStep);
             }); 
             
-        //    dial2.set({value:0.5});
-            dial2.on("*", function(){
-                gendy.yMax = dial2.val.value;
-                gendy.yMin = dial2.val.value*(-1);
-                console.log(gendy.yMax);
+            slider3.set({value:0.508});
+            gendy.yMin = -0.508;
+            gendy.yMax = 0.508;
+            slider3.on("*", function(){
+                gendy.yMax = slider3.val.value;
+                gendy.yMin = slider3.val.value*(-1);
+                console.log("ymax", gendy.yMax);
             });
 
-        //    dial3.set({value:0.01});
-            dial3.on("*", function(){
-                gendy.yStep = dial3.val.value;
-                console.log(gendy.yStep);
+            slider2.set({value:0.256});
+            gendy.yStep = 0.256;
+            slider2.on("*", function(){
+                gendy.yStep = slider2.val.value;
+                console.log("ystep", gendy.yStep);
             });
             
-        //    dial4.set({value:0.1});
-            dial4.on("*", function(){
-                gendy.freq = dial4.val.value*10;
-                console.log(gendy.freq);
+            slider4.set({value:1});
+            gendy.freq = 1;
+            slider4.on("*", function(){
+                gendy.freq = slider4.val.value*10;
+                console.log("freq", gendy.freq);
             });
 
         }
@@ -114,6 +146,27 @@
         var actx = new (AudioContext || wedkitAudioContext)();
        
         var gendy = new Gendy(actx);
+
+        function canvasDraw(){
+            window.requestAnimationFrame(canvasDraw);
+            
+            context.globalAlpha = 0.2
+            context.fillStyle = "#ffffff"
+            context.fillRect(0,0,canvas.width,canvas.height)
+            context.globalAlpha = 1
+            
+            context.strokeStyle = "#black";
+            context.lineWidth = 6;
+            context.beginPath();
+            context.moveTo(0,canvas.height/2)
+            
+            for (var i=0;i<gendy.breakpoint.length;i++) {
+                context.lineTo((gendy.breakpoint[i].x/gendy.scriptNode.bufferSize)*canvas.width/2 ,gendy.breakpoint[i].y*(canvas.height/2)+canvas.height/2)
+            }
+        
+            context.stroke()
+            context.closePath()
+        }
 
     </script>
 </html>
