@@ -26,10 +26,11 @@ function Gendy(actx){
 
     this.init();
 
-    console.log("-------{{Gendy.js v0.1}}-------")
+
 }
 
 Gendy.prototype.init = function(){
+    console.log("-------{{Gendy.js v0.1}}-------")
     //randomly set the initial x,y location of the specified number of breakpoints
     this.lastX = 0;
     this.last = 0;
