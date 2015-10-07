@@ -25,6 +25,8 @@ function Gendy(actx){
     this.spline;
 
     this.init();
+
+    console.log("-------{{Gendy.js v0.1}}-------")
 }
 
 Gendy.prototype.init = function(){
