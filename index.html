@@ -1,435 +1,173 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <script src="nexusUI.js"></script>
-  </head>
-  <style type="text/css">
-      
-      body{
-        font-style:Helvetica;
-      }
+    <head>
+        <script src="js/nexusUI.js"></script>
+        <script src="gendy.js"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
 
-      #background{
-        background-color: #bbccFF;
-        opacity:0.1;
-        position:fixed;
-        margin:-10px;
-        width:100%;
-        height:100%;
-      }
-      
-      #canvas{
-        position:relative;
-        width:600px;
-        height:300px;
-        top:50px;
-        margin: 30px auto;
-        display:block;
-        box-shadow:1px 1px #e0e0e0;
-        background-color: #fff;
-          
-      }
-
-      #top{
-        background-color: #fafafa;
-        padding:20px;
-        margin:-10px;
-        box-shadow:1px 1px #e0e0e0;
-        z-index:10;
-      }
-      
-      #top p{
-          position:relative;
-          left:22%;
-          color:#0000a0;
-          font-size:15pt;
-          font-family:Helvetica;
-          display:block;
-          margin: 10px auto;
-          
-      }
-  
-      .widg{
-          width:50px;
-          height:50px;
-          position:relative;
-          display:inline;
-          left:100px;
-          z-index:20;
-          margin-left:-50px;
-      }
+    <body>
+        <h1>
+            <p>GENDY.JS</p>
+            <p id="subtitle">A module for dynamic stochastic synthesis</p>
+        </h1>
 
 
-
-      .contain{
-        position:relative;
-        display:inline;
-        font-family:Helvetica;
-        font-size:10pt;
-        background-color: #fafafa;
-      }
-
-      .contain p{
-        position:relative;
-        display:inline;
-        top:20px;
-        left:20px;
-        padding-left:10px;
-      }
-
-      #control{
-        position:relative;
-        top:100px;
-          width:560px;
-          height:60px;
-          margin: auto;
-          display:block;
-          margin-top: -30px;
-          padding:40px 20px;
-          box-shadow:0px 1px 1px 0px #e0e0e0;
-          background-color: #fff;  
-      }
-
-      #number{
-        width:100px;
-      }
-
-      footer{
-        position:fixed;
-        margin:-8px;
-        bottom:0px;
-        height:40px;
-        width:100%;
-        background-color: #fafafa;
-        padding:30px;
-        font-size:12pt;
-
-      }
-
-      footer p{
-        left:100px;
-      }
-
-      #fork{
-        position:relative;
-        width:50px;
-        height:50px;
-        display:inline;
-        left:80%;
-        top:-60px;
-      }
-
-      a{
-        color:#000;
-      }
-     
-  </style>
-  <body>
-    <div id="background"></div>
-
-      <div id="top">
-          <p>GendyJS</p>
-          <p>A Web Audio Dynamic Stochastic Synthesis Algorithm</p>
-      </div>
-
-
-      <canvas id="canvas"></canvas>
-     
-      
-     
-      <div id="control">
-          <canvas nx="toggle"></canvas>
-            
-            <div class="contain">
-                <canvas nx="number" class="widg"></canvas>
-                <p># breakpoints</p>
-            </div>
-            <div class="contain">
-                <canvas nx="dial" class="widg"></canvas>
-                <p>x step size</p>
-            </div>
-            <div class="contain">
-                <canvas nx="dial" class="widg"></canvas>
-                <p>y bounds</p>
-            </div>
-            <div class="contain">
-                <canvas nx="dial" class="widg"></canvas>
-                <p>y step size</p>
-            </div>
-            <div class="contain">
-                <canvas nx="dial" class="widg"></canvas>
-                <p>frequency</p>
-            </div>
-            <div class="contain">
-                <canvas nx="dial" class="widg"></canvas>
-                <p>volume</p>
-            </div>
-        </div>
-
-        <footer>
-            <p>GendyJS is a project of <a href="http://www.andrewbernste.in">Andrew Bernstein</a></p>
-            <a href="http://www.github.com/abbernie/gendy"><img src="fork.png" id="fork"></img></a>
-        </footer>
-
-  </body>
-  <script>
-      
-      
-
-    nx.onload = function(){
-
-        var num = 5;
-
-        nx.sendsTo("js");
-        nx.showLabels = "true";
-        
-        nx.colorize("#0000a0");
-        
-        toggle1.on('*',function(){
-          if(toggle1.val.value == 1){
-              pressed();
-              init(num);
-          } else if(toggle1.val.value == 0){
-              stop();
-          }
-        });
-        
-        number1.label = "# of Breakpoints";
-        console.log(nx.showLabels);
-        number1.set({value:5});
-        number1.on("*", function(){
-            num = Math.floor(number1.val.value);
-            init(num);
-            console.log(number1);
-        });
-
-        dial1.label = "x step";
-        console.log(nx.showLabels);
-        dial1.set({value:0.1});
-        dial1.on("*", function(){
-            xStep = dial1.val.value * 50;
-
-            console.log(xStep);
-        }); 
-        
-        dial2.set({value:0.5});
-        dial2.on("*", function(){
-            yMax = dial2.val.value;
-            yMin = dial2.val.value*(-1);
-            console.log(yMax);
-        });
-
-        dial3.set({value:0.01});
-        dial3.on("*", function(){
-            yStep = dial3.val.value;
-            console.log(yStep);
-        });
-        
-        dial4.set({value:0.1});
-        dial4.on("*", function(){
-            freq = dial4.val.value*10;
-            console.log(freq);
-        });
-
-        dial5.set({value:0.5});
-        dial5.on("*", function(){
-            vol = dial5.val.value;
-            console.log(vol);
-        });
-    }
-
-    var canvas = document.getElementById("canvas");
-    var context = canvas.getContext('2d');
-    
-    canvas.width = 600;
-    canvas.height = 300
-    
-    /*
-    *
-    *
-    * AUDIO SYNTHESIS CODE
-    *
-    *
-    */
-
-    var actx = new (AudioContext || wedkitAudioContext)();
-
-    var gain = actx.createGain();
-    gain.gain.value = 0;
-
-    var gain2 = actx.createGain();
-    var vol = 0.5;
-    gain2.gain.value = vol;
-
-    var scriptNode = actx.createScriptProcessor(512,1,1);
-
-    var breakpoint = [];
-    
-    var xStep = 1;
-    var xRoom = 10;
-
-    var yMax = 0.5;
-    var yMin = -0.5;
-    var yStep = 0.01;
-
-    var y = 0;
-    var point = 0;
-    var index = 0;
-    var freq = 1;
-    
-    function init(breakpoints){
-        var lastX = 0;
-        var last = 0;
-        
-        for(var i = 0;i < breakpoints;i++){
-            if(i == 0){
-                //generate breakpoints
-                breakpoint[0] = {
-                    x : 0.0,
-                    y : 0.0,
-                    x1 : 0.0,
-                    y1 : 0.0,
-                    m : 0.0,
-                    b : 0.0
-                    };
-            } else if(i != 0){
-                
-                breakpoint[i] = {};
-                breakpoint[i].x = (Math.random()*200)+lastX;
-                
-                if(breakpoint[i].x >= scriptNode.bufferSize){
-                    breakpoint[i].x = scriptNode.bufferSize-10;
-                }
-                lastX = breakpoint[i].x;
-                breakpoint[i].y = (Math.random()*2)-1;
-                if(i == breakpoints-1){
-                    breakpoint[i].y = 0;
-                }
-                breakpoint[i].x1 = breakpoint[last].x;
-                breakpoint[i].y1 = breakpoint[last].y;
-                breakpoint[i].m = (breakpoint[i].y-breakpoint[last].y1)/(breakpoint[i].x-breakpoint[last].x1); 
-               
-                breakpoint[i].b = breakpoint[i].y-(breakpoint[i].m*breakpoint[i].x); 
-                last = i;
-            } else if(i == breakpoints-1){
-                breakpoint[i].y = 0;
-            }
-        }
-    }
-    
-
-    function walk(){
-      
-        var last = 0;
-        var next = 1;
+        <canvas id="canvas"></canvas>
        
-        for(var i = 0; i < breakpoint.length;i++){
-            if(i != 0){
-                var randomx = Math.floor(Math.random()*2);
-                var x = breakpoint[i].x;
-                
-                if(i != breakpoint.length-1){
-                    breakpoint[i].xMax = breakpoint[next].x-xRoom;
-                } else {
-                    breakpoint[i].xMax = scriptNode.bufferSize-xRoom;
-                }
-                
-                breakpoint[i].xMin = breakpoint[last].x+xRoom;
-                // the random walk, 2 samples in either direction
-                if(randomx == 0){
-                    x = x - xStep;
-                } else if(randomx == 1){
-                    x = x + xStep;
-                }
-               //bounds on the random walk, if it goes out of bounds, it jumps the difference back in
-                if(x >= breakpoint[i].xMax-xRoom){
-                   x = breakpoint[i].xMax-xRoom;
-                } else if(x <= breakpoint[i].xMin+xRoom){
-                   x = breakpoint[i].xMin+xRoom;
-                }
-                breakpoint[i].x = x;
-                
-                var randomy = Math.floor(Math.random()*2);
-                var y = breakpoint[i].y;
-                
-                if(randomy == 0){
-                    y = y - yStep;
-                } else if(randomy == 1){
-                    y = y + yStep;
-                }
-                if(y > yMax){
-                    y = yMax-(y-yMax);
-                } else if(y < yMin){
-                    y = yMin-(y-yMin);
-                }
-                breakpoint[i].y = y;
-            } 
-            if(i == breakpoint.length-1){
-                breakpoint[i].y = 0;
-                
-            }
-            last = i;
-            next++;
-        }
-    }
+        
+       
+        <table id="control">
+            <tr>
+                <td>
+                    <canvas nx="toggle"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="number"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider" class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+                <td>
+                    <canvas nx="slider"  class="widg"></canvas>
+                </td>
+            </tr>
+            
+            <tr id="labels">
+                <td>
+                    <label for="io" id="iol">i/o</label>
+                </td>
+                <td>
+                    <label for="break" id="breakl">points</label>
+                </td>
+                <td>
+                    <label for="x" id="xl">x-step</label>
+                </td>
+                <td>
+                    <label for="ystep" id="ystepl">y-step</label>
+                </td>
+                <td>
+                    <label for="ybound" id="yboundl">y-bounds</label>
+                </td>
+                <td>
+                    <label for="freq" id="freql">frequency</label>
+                </td>
+            </tr>
 
+        </table>
 
-    scriptNode.onaudioprocess = function(audioProcessingEvent){
-      context.globalAlpha = 0.5;
-      context.fillStyle = "#fff"
-      context.fillRect(0,0,canvas.width,canvas.height);
-      var outputBuffer = audioProcessingEvent.outputBuffer;
-      var outputData = outputBuffer.getChannelData(0);
-      for(var j = 0; j < outputData.length;j++){
-          // linearly interpolate between the new breakpoint positions
-          // get the interp point by comparing index to the x distance
-          var lerp = (index - breakpoint[point].x) / (breakpoint[point+1].x - breakpoint[point].x)
-          
-          y = lerp * (breakpoint[point+1].y - breakpoint[point].y) + breakpoint[point].y;
-          if(point < breakpoint.length && index >= breakpoint[point+1].x) {
-              point++;
-          }
-          
-          outputData[j] = y;
-          index+=freq; 
+        <div id="clear"></div>
 
-          if(index >= breakpoint[breakpoint.length-1].x){
-              index = 0;
-              point = 0;
-              walk(); 
-          }  
-          context.globalAlpha = 1;
-          context.fillStyle = "#0000a0";
-          context.fillRect(index,y*canvas.height+canvas.height/2,5,5);
-      }
+        <div id="info">
+            <div id="text">
+                <h3>More?</h3>
+                <p>Explore the Gendy.js <a href="http://www.github.com/abbernie/gendy">API</a></p>
+                <p>Contribute this project on <a href="http://www.github.com/abbernie/gendy">Github</a></p>
 
+                <p> Peruse the work of the project's authors, <a href="http://www.andrewbernste.in">Andrew Bernstein</a> and <a href="http://www.whitechord.org"> Ben Taylor</a></p>
+            </div>
+
+        </div>
     
+    </body>
+    <script>
+        
+        nx.onload = function(){
+            nx.sendsTo("js");
+            nx.showLabels = "true";
+            nx.setLabels("true");
+            nx.colorize("#007700");
 
-    }
-   
+            
+            toggle1.on('*',function(){
+                if(toggle1.val.value == 1){
+                    
+                    gendy.connect(actx.destination);
+                    canvasDraw();
+                    gendy.start();
+                } else if(toggle1.val.value == 0){
+                    gendy.disconnect(actx.destination);
+                }
+            });
+            number1.decimalPlaces = 0;
+            number1.set({value:15});
+            gendy.breakpoints = 15;
+            number1.on("*", function(){
+                gendy.breakpoints = number1.val.value;
+                gendy.init();
+                context.fillStyle = "#ffffff";
+                context.fillRect(0,0,canvas.width,canvas.height);
+                console.log("breakpoints", gendy.breakpoints)
+            })
+        
+            slider1.label = "x step";
+            slider1.set({value:.56});
+            gendy.xStep = 28;
+            slider1.on("*", function(){
+                gendy.xStep = slider1.val.value * 50;
 
-    function connect(output){
-        scriptNode.connect(output);
-    }
+                console.log("xstep", gendy.xStep);
+            }); 
+            
+            slider3.set({value:0.256});
+            gendy.yMin = -0.256;
+            gendy.yMax = 0.256;
+            slider3.on("*", function(){
+                gendy.yMax = slider3.val.value;
+                gendy.yMin = slider3.val.value*(-1);
+                console.log("ymax", gendy.yMax);
+            });
 
-    function disconnect(output){
-        scriptNode.disconnect(output);
-    }
+            slider2.set({value:0.508});
+            gendy.yStep = 0.508;
+            slider2.on("*", function(){
+                gendy.yStep = slider2.val.value;
+                console.log("ystep", gendy.yStep);
+            });
+            
+            slider4.set({value:.1});
+            gendy.freq = 0.1;
+            slider4.on("*", function(){
+                gendy.freq = slider4.val.value*10;
+                console.log("freq", gendy.freq);
+            });
 
-    function pressed(){
-      gain.gain.setValueAtTime(0.0,actx.currentTime);
-      connect(gain);
-      gain.connect(gain2);
-      gain2.connect(actx.destination);
-      gain.gain.linearRampToValueAtTime(1.0, actx.currentTime+5.0);
-      
-      
-    }
+        }
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = 300
+        var actx = new (AudioContext || wedkitAudioContext)();
+       
+        var gendy = new Gendy(actx);
+        gendy.breakpoints = 15;
 
-    function stop(){
-      disconnect(gain2);
-    }
+        function canvasDraw(){
+            window.requestAnimationFrame(canvasDraw);
+            
+            context.globalAlpha = 0.2
+            context.fillStyle = "#ffffff"
+            context.fillRect(0,0,canvas.width,canvas.height)
+            context.globalAlpha = 1
+            
+            context.strokeStyle = "#black";
+            context.lineWidth = 6;
+            context.beginPath();
+            context.moveTo(0,canvas.height/2)
+            
+            for (var i=0;i<gendy.breakpoint.length;i++) {
+                context.lineTo((gendy.breakpoint[i].x/gendy.scriptNode.bufferSize)*canvas.width/2 ,gendy.breakpoint[i].y*(canvas.height/2)+canvas.height/2)
+            }
+        
+            context.stroke()
+            context.closePath()
+        }
 
-      
-  </script>
+    </script>
 </html>
