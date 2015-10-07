@@ -17,7 +17,7 @@ function Gendy(actx){
     this.index = 0;
     this.point = 0;
     this.y = 0;
-    this.freq = 0.01;
+    this.freq = 0.5;
 
     this.wave = 'linear';
     this.waveformlength = 850;

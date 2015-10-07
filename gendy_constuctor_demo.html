@@ -96,7 +96,7 @@
                 }
             });
             number1.decimalPlaces = 0;
-            number1.set({value:10});
+            number1.set({value:15});
             gendy.breakpoints = 15;
             number1.on("*", function(){
                 gendy.breakpoints = number1.val.value;
@@ -107,32 +107,32 @@
             })
         
             slider1.label = "x step";
-            slider1.set({value:2.8});
-            gendy.xStep = 0;
+            slider1.set({value:.56});
+            gendy.xStep = 28;
             slider1.on("*", function(){
                 gendy.xStep = slider1.val.value * 50;
 
                 console.log("xstep", gendy.xStep);
             }); 
             
-            slider3.set({value:0.508});
-            gendy.yMin = -0.508;
-            gendy.yMax = 0.508;
+            slider3.set({value:0.256});
+            gendy.yMin = -0.256;
+            gendy.yMax = 0.256;
             slider3.on("*", function(){
                 gendy.yMax = slider3.val.value;
                 gendy.yMin = slider3.val.value*(-1);
                 console.log("ymax", gendy.yMax);
             });
 
-            slider2.set({value:0.256});
-            gendy.yStep = 0.256;
+            slider2.set({value:0.508});
+            gendy.yStep = 0.508;
             slider2.on("*", function(){
                 gendy.yStep = slider2.val.value;
                 console.log("ystep", gendy.yStep);
             });
             
-            slider4.set({value:1});
-            gendy.freq = 1;
+            slider4.set({value:.1});
+            gendy.freq = 0.1;
             slider4.on("*", function(){
                 gendy.freq = slider4.val.value*10;
                 console.log("freq", gendy.freq);
@@ -146,6 +146,7 @@
         var actx = new (AudioContext || wedkitAudioContext)();
        
         var gendy = new Gendy(actx);
+        gendy.breakpoints = 15;
 
         function canvasDraw(){
             window.requestAnimationFrame(canvasDraw);
