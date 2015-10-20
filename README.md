@@ -54,3 +54,9 @@ gendy.init(10);
 ### Demo
 
 [GendyJS Demo](http://abbernie.github.io/gendy)
+
+### License
+
+GendyJS is licensed as open source software under [the MIT license](https://opensource.org/licenses/MIT)
+
+
