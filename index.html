@@ -22,9 +22,7 @@
                 <td>
                     <canvas nx="toggle"  class="widg"></canvas>
                 </td>
-                <td>
-                    <canvas nx="number"  class="widg"></canvas>
-                </td>
+      
                 <td>
                     <canvas nx="slider" class="widg"></canvas>
                 </td>
@@ -43,9 +41,7 @@
                 <td>
                     <label for="io" id="iol">i/o</label>
                 </td>
-                <td>
-                    <label for="break" id="breakl">points</label>
-                </td>
+
                 <td>
                     <label for="x" id="xl">x-step</label>
                 </td>
@@ -95,16 +91,16 @@
                     gendy.disconnect(actx.destination);
                 }
             });
-            number1.decimalPlaces = 0;
-            number1.set({value:15});
-            gendy.breakpoints = 15;
-            number1.on("*", function(){
-                gendy.breakpoints = number1.val.value;
-                gendy.init();
-                context.fillStyle = "#ffffff";
-                context.fillRect(0,0,canvas.width,canvas.height);
-                console.log("breakpoints", gendy.breakpoints)
-            })
+            // number1.decimalPlaces = 0;
+            // number1.set({value:15});
+            // gendy.breakpoints = 15;
+            // number1.on("*", function(){
+            //     gendy.breakpoints = number1.val.value;
+            //     gendy.init();
+            //     context.fillStyle = "#ffffff";
+            //     context.fillRect(0,0,canvas.width,canvas.height);
+            //     console.log("breakpoints", gendy.breakpoints)
+            // })
         
             slider1.label = "x step";
             slider1.set({value:.56});
@@ -146,7 +142,8 @@
         var actx = new (AudioContext || wedkitAudioContext)();
        
         var gendy = new Gendy(actx);
-        gendy.breakpoints = 15;
+        gendy.breakpoints = 5;
+       
 
         function canvasDraw(){
             window.requestAnimationFrame(canvasDraw);
