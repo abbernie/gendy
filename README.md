@@ -8,7 +8,7 @@
 
 ### How to Use GendyJS
 
-Download gendy.js and include it in a script tag at the top of your page.
+Download the gendy.js file and include it in a script tag at the top of your page.
 
 ```html
 <head>
@@ -23,7 +23,7 @@ var gendy = new Gendy(audioContext);
 ```
 ### Controls
 
-Users have access to 4 parameters to control the oscilator.
+Users have access to 6 parameters to control the oscilator.
 
 Frequency
 ```js
@@ -46,10 +46,11 @@ Y Step Size
 gendy.yStep = 0.25;
 ```
 
-The ```init()``` method can be called to reinitialize the waveform with a new number of breakpoints.
+The ```breakpoints``` property can be set followed by a call to the ```init()``` method to reinitialize the waveform with a new number of breakpoints.
 
 ```js
-gendy.init(10);
+gendy.breakpoints = 15;
+gendy.init();
 ```
 ### Demo
 

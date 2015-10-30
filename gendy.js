@@ -62,7 +62,10 @@ Gendy.prototype.init = function(){
             this.breakpoint[i].y = 0;
         }
 
-    /*    if (i>0 && i<this.breakpoint.length) {
+    /*    
+    Debugging
+
+    if (i>0 && i<this.breakpoint.length) {
 
         	with (context) {
         		lineWidth = 4
@@ -78,6 +81,7 @@ Gendy.prototype.init = function(){
         } */
 
     }
+    // bezier interpolation is buggy
      if(this.wave == 'bezier'){
         this.convertBreakpoints();
     }
@@ -139,7 +143,10 @@ Gendy.prototype.walk = function(){
         last = i;
         next++;
 
-      /*  if (i>0 && i<this.breakpoint.length) {
+      /*  
+      Debugging
+
+      if (i>0 && i<this.breakpoint.length) {
 
         	with (context) {
         		strokeStyle = "#fa0"
@@ -207,6 +214,7 @@ Gendy.prototype.process = function(){
             }
         }.bind(this);
     } else if(this.wave == 'bezier'){
+        // bezier interpolation is buggy / does not currently work
         this.scriptNode.onaudioprocess = function(audioProcessingEvent){
           
           var outputBuffer = audioProcessingEvent.outputBuffer;
