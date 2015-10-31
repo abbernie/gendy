@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
-	eslint = require('gulp-eslint');
+	eslint = require('gulp-eslint'),
+	webserver = require('gulp-webserver');
 
 gulp.task('lint', function () {
 	return gulp.src(['**/*.js'])
@@ -8,4 +9,14 @@ gulp.task('lint', function () {
         .pipe(eslint.failAfterError());
 });
 
-gulp.task('default', ['lint']);
+gulp.task('webserver', function() {
+	gulp.src('./')
+		.pipe(webserver({
+			livereload: true,
+			directoryListing: false,
+			fallback: 'index.html',
+			open: true
+	}));
+});
+
+gulp.task('default', ['lint', 'webserver']);
