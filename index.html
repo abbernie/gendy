@@ -1,136 +1,159 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="js/nexusUI.js"></script>
-        <script src="gendy.js"></script>
-        <link rel="stylesheet" href="style.css">
-    </head>
-
-    <body>
-        <h1>
-            <p>GENDY.JS</p>
-            <p id="subtitle">A module for dynamic stochastic synthesis</p>
-        </h1>
-
-
-        <canvas id="canvas"></canvas>
-       
+  <head>
+    <meta charset="utf-8" content="text/html" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="js/nexusUI.js"></script>
+    <script src="gendy.js"></script>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+      <h1>Gendy.js</h1>
+      <div id="instrument">
         
-       
-        <table id="control">
-            <tr>
-                <td>
-                    <canvas nx="toggle"  class="widg"></canvas>
-                </td>
-      
-                <td>
-                    <canvas nx="slider" class="widg"></canvas>
-                </td>
-                <td>
-                    <canvas nx="slider"  class="widg"></canvas>
-                </td>
-                <td>
-                    <canvas nx="slider"  class="widg"></canvas>
-                </td>
-                <td>
-                    <canvas nx="slider"  class="widg"></canvas>
-                </td>
-            </tr>
-            
-            <tr id="labels">
-                <td>
-                    <label for="io" id="iol">i/o</label>
-                </td>
+        <canvas nx="position" label="Waveform Control" ></canvas>
 
-                <td>
-                    <label for="x" id="xl">x-step</label>
-                </td>
-                <td>
-                    <label for="ystep" id="ystepl">y-step</label>
-                </td>
-                <td>
-                    <label for="ybound" id="yboundl">y-bounds</label>
-                </td>
-                <td>
-                    <label for="freq" id="freql">frequency</label>
-                </td>
-            </tr>
-
-        </table>
-
-        <div id="clear"></div>
-
-        <div id="info">
-            <div id="text">
-                <h3>More?</h3>
-                <p>Explore the Gendy.js <a href="http://www.github.com/abbernie/gendy">API</a></p>
-                <p>Contribute this project on <a href="http://www.github.com/abbernie/gendy">Github</a></p>
-
-                <p> Peruse the work of the project's authors, <a href="http://www.andrewbernste.in">Andrew Bernstein</a> and <a href="http://www.whitechord.org"> Ben Taylor</a></p>
-            </div>
-
+        <canvas nx="envelope" label="Envelope" ></canvas>
+        
+        <div id="side">
+          <canvas nx="dial" label="Frequency"></canvas>
+          <canvas nx="toggle" label="I/O"></canvas>
         </div>
-    
-    </body>
-    <script>
         
-        nx.onload = function(){
-            nx.sendsTo("js");
-            nx.showLabels = "true";
-            nx.setLabels("true");
-            nx.colorize("#007700");
+        <canvas nx="slider" label="Speed" ></canvas>
 
-            
-            toggle1.on('*',function(){
-                if(toggle1.val.value == 1){
-                    
-                    gendy.connect(actx.destination);
-                    canvasDraw();
-                    gendy.start();
-                } else if(toggle1.val.value == 0){
-                    gendy.disconnect(actx.destination);
-                }
-            });
-            // number1.decimalPlaces = 0;
-            // number1.set({value:15});
-            // gendy.breakpoints = 15;
-            // number1.on("*", function(){
-            //     gendy.breakpoints = number1.val.value;
-            //     gendy.init();
-            //     context.fillStyle = "#ffffff";
-            //     context.fillRect(0,0,canvas.width,canvas.height);
-            //     console.log("breakpoints", gendy.breakpoints)
-            // })
+      </div>
+
+      <div id="sidebar">
+        <p>Explore the Gendy.js <a href="http://www.github.com/abbernie/gendy">API</a></p>
         
-            slider1.label = "x step";
-            slider1.set({value:.56});
-            gendy.xStep = 28;
-            slider1.on("*", function(){
-                gendy.xStep = slider1.val.value * 50;
+        <p>Contribute to this project on <a href="http://www.github.com/abbernie/gendy">Github</a></p>
 
-                console.log("xstep", gendy.xStep);
-            }); 
-            
-            slider3.set({value:0.256});
-            gendy.yMin = -0.256;
-            gendy.yMax = 0.256;
-            slider3.on("*", function(){
-                gendy.yMax = slider3.val.value;
-                gendy.yMin = slider3.val.value*(-1);
-                console.log("ymax", gendy.yMax);
-            });
+        <p>Peruse the work of the authors of this project, <a href="http://www.andrewbernste.in">Andrew Bernstein</a> and <a href="http://www.whitechord.org">Ben Taylor</a></p>
+      </div>
+     
+  </body>
+  <script>
+   
 
-            slider2.set({value:0.508});
-            gendy.yStep = 0.508;
-            slider2.on("*", function(){
-                gendy.yStep = slider2.val.value;
-                console.log("ystep", gendy.yStep);
-            });
-            
-            slider4.set({value:.1});
-            gendy.freq = 0.1;
-            slider4.on("*", function(){
-                gendy.freq = slider4.val.value*10;
+    nx.onload = function(){
+
+      console.log(position1.nodeSize);
+
+      position1.colors.accent = "#5DC278";
+      envelope1.colors.accent = "#5DC278";
+      dial1.colors.accent = "#5DC278";
+      toggle1.colors.accent = "#5DC278";
+      slider1.colors.accent = "#5DC278";
+
+      position1.colors.border = "#C25D5D";
+      envelope1.colors.border = "#C25D5D";
+      dial1.colors.border = "#C25D5D";
+      toggle1.colors.border = "#C25D5D";
+      toggle1.colors.borderhl = "#C25D5D";
+      toggle1.colors.accenthl = "#C25D5D";
+      slider1.colors.border = "#C25D5D";
+
+      position1.context.font = "20px sans serif normal";
+      envelope1.context.font = "20px sans serif normal";
+      dial1.context.font = "20px sans serif normal";
+      toggle1.context.font = "20px sans serif normal";
+      slider1.context.font = "20px sans serif normal";
+
+      console.log(position1.context.font);
+
+      slider1.hslider = true;
+      envelope1.looping = true;
+      position1.nodeSize = 20;
+      
+      position1.draw();
+      envelope1.draw();
+      dial1.draw();
+      toggle1.draw();
+      slider1.draw();
+
+      position1.set({
+        x: 0.3,
+        y: 0.5
+      }, true);
+
+      position1.on('*', function(){
+       
+        gendy.xStep = position1.val.x*500;
+        gendy.yStep = position1.val.y;  
+        gendy.yMin = position1.val.y - (position1.val.y*2) + 0.001;
+        gendy.yMax = position1.val.y - (position1.val.y*2) - 0.001;
+        console.log("xStep ", gendy.xStep);
+        console.log("yStep", gendy.yStep);
+        console.log("yBounds", gendy.yMin);
+
+      });
+
+      dial1.set({
+        value: 0.5
+      }, true);
+
+      dial1.on('*', function(){
+        gendy.freq = dial1.val.value*2;
+      });
+
+      envelope1.on('*', function(){
+        gain.gain.value = envelope1.val.amp;
+      });
+
+      toggle1.on('*',function(){
+        console.log(toggle1.val.value);
+        if(toggle1.val.value == 1){
+          envelope1.active = true;
+          gain.gain.value = 0.5;
+          console.log(envelope1.active);
+        } else {
+          gain.gain.value = 0;
+          envelope1.active = false;
+        }
+      });
+
+      slider1.on('*',function(){
+        envelope1.duration = slider1.val.value*5000;
+      });
+
+      gain.gain.value = envelope1.val.amp;
+
+    }
+
+    var actx = new AudioContext();
+    var gendy = new Gendy(actx);
+    var gain = actx.createGain();
+    gain.gain.value = 0.2;
+    gendy.connect(gain);
+    gain.connect(actx.destination);
+    gendy.start();
+
+    var toggle = 0;
+    gendy.xStep = 3;
+    gendy.yStep = 0.2;
+
+    // window.onmousemove = mouse;
+
+    // function mouse(e){
+    //   if(toggle == 1){
+    //     gendy.freq = e.clientX/(window.innerWidth/10);
+    //   } else{
+    //     gendy.xStep = e.clientX;
+    //     gendy.yStep = e.clientY;
+    //   }
+    // }
+
+    // window.onmousedown = function(){
+    //   toggle = 1;
+    // }
+
+    // window.onmouseup = function(){
+    //   toggle = 0;
+    // }
+      
+  </script>
+</html>lider4.val.value*10;
                 console.log("freq", gendy.freq);
             });
 
