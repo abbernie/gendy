@@ -153,41 +153,4 @@
     // }
       
   </script>
-</html>lider4.val.value*10;
-                console.log("freq", gendy.freq);
-            });
-
-        }
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext('2d');
-        canvas.width = 600;
-        canvas.height = 300
-        var actx = new (AudioContext || wedkitAudioContext)();
-       
-        var gendy = new Gendy(actx);
-        gendy.breakpoints = 5;
-       
-
-        function canvasDraw(){
-            window.requestAnimationFrame(canvasDraw);
-            
-            context.globalAlpha = 0.2
-            context.fillStyle = "#ffffff"
-            context.fillRect(0,0,canvas.width,canvas.height)
-            context.globalAlpha = 1
-            
-            context.strokeStyle = "#black";
-            context.lineWidth = 6;
-            context.beginPath();
-            context.moveTo(0,canvas.height/2)
-            
-            for (var i=0;i<gendy.breakpoint.length;i++) {
-                context.lineTo((gendy.breakpoint[i].x/gendy.scriptNode.bufferSize)*canvas.width/2 ,gendy.breakpoint[i].y*(canvas.height/2)+canvas.height/2)
-            }
-        
-            context.stroke()
-            context.closePath()
-        }
-
-    </script>
 </html>
