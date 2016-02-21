@@ -1,206 +1,148 @@
-
 body{
+    margin:0px;
+    padding:0px;
     font-family: Helvetica;
 }
 
-
-
-h3{
-    padding-left:20px;
-    color:#007700;
-}
-
-#subtitle{
-    margin-top:-10px;
-    color:#5e5e5e;
-    font-weight:normal;
-}
-
-.widg{
-    width:75px;
-    height:75px;
+h1{
+  width:200px;
+  margin-left:30vw;
 
 }
 
-#labels {
- 
-    color:#3f3f3f;
+@media(min-width:500px){
 
-}
-
-
-
-#iol{
-    margin-left:30px;
-}
-
-#breakl{
-    margin-left:14px;
-}
-
-#xl{
-    margin-left:17px;
-}
-
-#ystepl{
-    margin-left:15px;
-}
-
- #yboundl{
-    margin-left:6px;
-}
-
-#freql{
-    margin-left:6px;
-}
-
-@media(min-width:950px){
-    h1{
-        font-size:15pt;
-        font-family:Helvetica;
-        display:block;
-        padding-top: 50px;
-        padding-left:80px;
-        color:#007700;
-    }
-
-    #control{
-        position:relative;
-        left:10%;
-        margin: 30px;
-        margin-top:0px;
-        padding:0px 20px;
-        font-family:Helvetica;
-        font-size:10pt;
-        font-weight:bold;
-    }
-
-    #canvas{
-        width:600px;
-        height:300px;
-        margin: 20px 60px;
-        
-        display:block;
-        border: 2px solid #007700;
-    }   
-
-
-    #info{
-        position:fixed;
-        float:right;
-        top:0px;
+      #sidebar{
+        width:200px;
+        font-size:1em;
+        position:absolute;
+        padding:20px;
+        top:100px;
         right:0px;
-        height:100%;
-        max-width:30%;
-        background-color:#fafafa;
-    }
-
-     #info p{
-        padding:10px 40px;
-
-    }
-
-}
-
-@media(max-width:949px) and (min-width:620px){
-
-    h1{
-        font-size:15pt;
-        font-family:Helvetica;
-        display:block;
-        padding-top: 50px;
-        padding-left:80px;
-        color:#007700;
-    }
-
-    #control{
-        position:relative;
-        left:5%;
-        margin: 30px;
-        margin-top:0px;
-        padding:0px 20px;
-        font-family:Helvetica;
-        font-size:10pt;
-        font-weight:bold;
-    }
-
-    #canvas{
-        max-width:600px;
-        min-width:300px;
-        height:300px;
-        margin: 20px 60px;
         
-        display:block;
-        border: 2px solid #007700;
-    } 
+      }
+      /* Instrument */
 
-    #info{
-        position:relative;
-        bottom:0px;
-        left:0px;
-        width:100%;
-        background-color:#fafafa;
-    }
-
-    #info p{
-        padding:0px;
-
-    }
-
-}
-
-@media(max-width:619px){
-
-    h1{
-        font-size:15pt;
-        font-family:Helvetica;
-        display:block;
-        padding-top: 50px;
-        padding-left:10px;
-        color:#007700;
-    }
-
-    #control{
-        position:relative;
-        left:0%;
-      
-        margin-top:0px;
-     
-        font-family:Helvetica;
-        font-size:10pt;
-        font-weight:bold;
-    }
-
-    #canvas{
-        width:100%;
-        height:300px;
-        margin:0px;
+      #instrument{
+          width:80vw;
+          max-width:500px;
+          min-width:250px;
+          margin:0px auto;
+          padding:0px;
+          font-size:1em;
+          
+        }
         
-        display:block;
-        border: 2px solid #007700;
-    }  
+        #position1{
+          width:100vw;
+          height:100vh;
+          max-width:400px;
+          max-height:300px;
+        }
 
-}
+        #envelope1{
+          width:100vw;
+          height:100vh;
+          max-width:296px;
+          max-height:200px;
+        }
 
+        #slider1{
+          width:100vw;
+          height:100vh;
+          max-width:400px;
+          max-height:10vh;
+          min-height:50px;
+        }
 
+        #toggle1{
+          width:100vw;
+          height:100vh;
+          max-width:100px;
+          max-height:100px;
 
-#text{
-    margin-top:200px;
-}
+        }
 
-a {
-    text-decoration:none;
-    color:#000;
-    font-weight:bold;
+        #dial1{
+          width:100vw;
+          height:100vh;
+          max-width:100px;
+          max-height:100px;
+        }   
 
-}
+        #side{
+          max-width:100px;
+          display:inline-block;
+        }
+      }
 
-a:hover{
-    text-decoration: underline;
-    color:#007700;
+    @media(max-width:500px){
 
-}
+      #instrument{
+          width:80vw;
+          max-width:500px;
+          min-width:450px;
+          margin:0px auto;
+          padding:0px;
+        
+        }
+        
+        #position1{
+          width:100vw;
+          height:100vh;
+          max-width:400px;
+          max-height:300px;
+        }
 
-#clear{
-    clear:both;
-}
+        #envelope1{
+          width:100vw;
+          height:100vh;
+          max-width:296px;
+          max-height:200px;
+        }
+
+        #slider1{
+          width:100vw;
+          height:100vh;
+          max-width:400px;
+          max-height:10vh;
+          min-height:50px;
+        }
+
+        #toggle1{
+          width:100vw;
+          height:100vh;
+          max-width:100px;
+          max-height:100px;
+
+        }
+
+        #dial1{
+          width:100vw;
+          height:100vh;
+          max-width:100px;
+          max-height:100px;
+        }   
+
+        #side{
+          max-width:100px;
+          display:inline-block;
+        }
+      }
+
+      @media(max-width:800px){
+        #sidebar{
+          width:100vw;
+          font-size:1em;
+          position:relative;
+          padding:20px;
+          margin:0px auto;
+        
+        }
+
+        #sidebar p{
+          padding:5px;
+        }
+          
+      }
+
