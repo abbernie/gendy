@@ -24,7 +24,9 @@
 
       </div>
 
+
       <div id="sidebar">
+        <canvas id="waveform"></canvas>
         <p>Explore the Gendy.js <a href="http://www.github.com/abbernie/gendy">API</a></p>
         
         <p>Contribute to this project on <a href="http://www.github.com/abbernie/gendy">Github</a></p>
@@ -79,10 +81,12 @@
 
       position1.on('*', function(){
        
-        gendy.xStep = position1.val.x*500;
+        gendy.xStep = Math.floor(position1.val.x*50);
         gendy.yStep = position1.val.y;  
-        gendy.yMin = position1.val.y - (position1.val.y*2) + 0.001;
-        gendy.yMax = position1.val.y - (position1.val.y*2) - 0.001;
+        var max = position1.val.y - 0.01;
+        var min = position1.val.y - (position1.val.y*2) + 0.01;
+        gendy.yMin = min;
+        gendy.yMax = max;
         console.log("xStep ", gendy.xStep);
         console.log("yStep", gendy.yStep);
         console.log("yBounds", gendy.yMin);
@@ -104,6 +108,9 @@
       toggle1.on('*',function(){
         console.log(toggle1.val.value);
         if(toggle1.val.value == 1){
+          canvasDraw();
+          gendy.breakpoints = 10;
+          gendy.init();
           envelope1.active = true;
           gain.gain.value = 0.5;
           console.log(envelope1.active);
@@ -132,6 +139,34 @@
     var toggle = 0;
     gendy.xStep = 3;
     gendy.yStep = 0.2;
+
+    var canvas = document.getElementById("waveform");
+    var context = canvas.getContext('2d');
+
+    function canvasDraw(){
+      window.requestAnimationFrame(canvasDraw);
+     
+     context.globalAlpha = 0.5
+     context.fillStyle = "#ffffff"
+     context.fillRect(0,0,canvas.width,canvas.height)
+     context.globalAlpha = 1
+     
+     context.strokeStyle = "#black";
+     context.lineWidth = 6;
+     context.beginPath();
+     context.moveTo(0,canvas.height/2)
+     
+     for (var i=0;i<gendy.breakpoint.length;i++) {
+
+         context.lineTo((gendy.breakpoint[i].x/gendy.scriptNode.bufferSize)*canvas.width/2 ,gendy.breakpoint[i].y*(canvas.height/2)+canvas.height/2);
+
+         context.ellipse((gendy.breakpoint[i].x/gendy.scriptNode.bufferSize)*canvas.width/2 ,gendy.breakpoint[i].y*(canvas.height/2)+canvas.height/2, 5, 5, 45 * Math.PI/180, 0, 2 * Math.PI);
+        
+     }
+
+     context.stroke();
+     context.closePath();
+  }
 
     // window.onmousemove = mouse;
 
