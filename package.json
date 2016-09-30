@@ -4,7 +4,7 @@
   "description": "GendyJS is a Web Audio API dynamic stochastic synthesis oscilator. Dynamic stochastic synthesis is a technique pioneered by the composer and theoretician Iannis Xenakis.",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test"
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
